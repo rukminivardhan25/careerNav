@@ -412,9 +412,10 @@ export class MentorController {
       // Validate rating for resume reviews (required, 1-5)
       if (reviewId.startsWith("resume_")) {
         if (!rating || typeof rating !== "number" || rating < 1 || rating > 5) {
-          return res.status(400).json({
+          res.status(400).json({
             error: "Rating is required and must be an integer between 1 and 5",
           });
+          return;
         }
       }
 

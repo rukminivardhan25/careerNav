@@ -24,19 +24,19 @@ passport.deserializeUser(async (id: string, done) => {
 
 // Google OAuth Strategy
 passport.use(
-  new GoogleStrategy(
+  new (GoogleStrategy as any)(
     {
       clientID: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       callbackURL: process.env.GOOGLE_CALLBACK_URL || "/api/auth/google/callback",
     },
-    async (accessToken, refreshToken, profile: GoogleProfile, done) => {
+    async (accessToken: any, refreshToken: any, profile: GoogleProfile, done: any) => {
       try {
         const email = profile.emails?.[0]?.value;
         const name = profile.displayName;
 
         if (!email) {
-          return done(new Error("No email found in Google profile"), null);
+          return done(new Error("No email found in Google profile"), undefined);
         }
 
         // Normalize email to lowercase to avoid case sensitivity issues
@@ -63,7 +63,7 @@ passport.use(
 
         return done(null, user);
       } catch (error) {
-        return done(error, null);
+        return done(error as Error, undefined);
       }
     }
   )

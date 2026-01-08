@@ -43,8 +43,8 @@ export async function generateWeeklyIndustryInsights(): Promise<void> {
     for (const student of students) {
       try {
         // Get selected career path
-        const selectedCareer = await prisma.selected_careers.findUnique({
-          where: { user_id: student.user_id },
+        const selectedCareer = await prisma.selected_careers.findFirst({
+          where: { student_id: student.user_id },
           select: {
             career_title: true,
           },

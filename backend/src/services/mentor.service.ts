@@ -1188,7 +1188,7 @@ export class MentorService {
       }
 
       // Map skill_name to students based on their most recent session
-      const students = Array.from(studentMap.values()).map((student) => {
+      let students = Array.from(studentMap.values()).map((student) => {
         // Find the most recent session for this student
         const studentSessions = sessions.filter((s) => s.student_id === student.id);
         const mostRecentSession = studentSessions[0]; // Already ordered by created_at desc
@@ -2031,6 +2031,9 @@ export class MentorService {
           nextMsg.sender_role === "MENTOR" &&
           currentMsg.session_id === nextMsg.session_id
         ) {
+          if (!nextMsg.created_at || !currentMsg.created_at) {
+            continue;
+          }
           const responseTime = nextMsg.created_at.getTime() - currentMsg.created_at.getTime();
           responseTimes.push(responseTime); // in milliseconds
         }
@@ -2339,8 +2342,8 @@ export class MentorService {
       });
 
       // Filter to sessions with successful payments
-      const paidSessions = sessions.filter((session) => {
-        if (session.status === SessionStatus.PAID || session.status === SessionStatus.SCHEDULED) {
+      const paidSessions = sessions.filter((session: any) => {
+        if ((session as any).status === SessionStatus.PAID || (session as any).status === SessionStatus.SCHEDULED) {
           return true;
         }
         if (session.payments && session.payments.status === PaymentStatus.SUCCESS) {
@@ -2831,6 +2834,7 @@ export class MentorService {
         data: {
           session_id: data.sessionId,
           sender_id: mentorId,
+          sender_role: "MENTOR",
           content: data.content,
           message_type: data.messageType || "text",
         },
@@ -3066,13 +3070,16 @@ export class MentorService {
                 let optionsArray: string[] = [];
                 if (typeof q.options === 'string') {
                   try {
-                    optionsArray = JSON.parse(q.options);
+                    const parsed = JSON.parse(q.options);
+                    optionsArray = Array.isArray(parsed) 
+                      ? parsed.filter((item): item is string => typeof item === "string")
+                      : [];
                   } catch (e) {
                     console.error(`[MentorService] Failed to parse options for question ${q.id}:`, e);
                     optionsArray = [];
                   }
                 } else if (Array.isArray(q.options)) {
-                  optionsArray = q.options;
+                  optionsArray = q.options.filter((item): item is string => typeof item === "string");
                 } else {
                   optionsArray = [];
                 }
@@ -3178,13 +3185,16 @@ export class MentorService {
           let optionsArray: string[] = [];
           if (typeof q.options === 'string') {
             try {
-              optionsArray = JSON.parse(q.options);
+              const parsed = JSON.parse(q.options);
+              optionsArray = Array.isArray(parsed) 
+                ? parsed.filter((item): item is string => typeof item === "string")
+                : [];
             } catch (e) {
               console.error(`[MentorService] Failed to parse options for question ${q.id}:`, e);
               optionsArray = [];
             }
           } else if (Array.isArray(q.options)) {
-            optionsArray = q.options;
+            optionsArray = q.options.filter((item): item is string => typeof item === "string");
           } else {
             console.error(`[MentorService] Invalid options format for question ${q.id}:`, typeof q.options);
             optionsArray = [];
@@ -3269,13 +3279,16 @@ export class MentorService {
         let optionsArray: string[] = [];
         if (typeof q.options === 'string') {
           try {
-            optionsArray = JSON.parse(q.options);
+            const parsed = JSON.parse(q.options);
+            optionsArray = Array.isArray(parsed) 
+              ? parsed.filter((item): item is string => typeof item === "string")
+              : [];
           } catch (e) {
             console.error(`[MentorService] Failed to parse options for question ${q.id}:`, e);
             optionsArray = [];
           }
         } else if (Array.isArray(q.options)) {
-          optionsArray = q.options;
+          optionsArray = q.options.filter((item): item is string => typeof item === "string");
         } else {
           console.error(`[MentorService] Invalid options format for question ${q.id}:`, typeof q.options);
           optionsArray = [];
@@ -3680,13 +3693,16 @@ export class MentorService {
               let optionsArray: string[] = [];
               if (typeof q.options === 'string') {
                 try {
-                  optionsArray = JSON.parse(q.options);
+                  const parsed = JSON.parse(q.options);
+                  optionsArray = Array.isArray(parsed) 
+                    ? parsed.filter((item): item is string => typeof item === "string")
+                    : [];
                 } catch (e) {
                   console.error(`[MentorService] Failed to parse options for question ${q.id}:`, e);
                   optionsArray = [];
                 }
               } else if (Array.isArray(q.options)) {
-                optionsArray = q.options;
+                optionsArray = q.options.filter((item): item is string => typeof item === "string");
               } else {
                 console.error(`[MentorService] Invalid options format for question ${q.id}:`, typeof q.options);
                 optionsArray = [];
@@ -3766,13 +3782,16 @@ export class MentorService {
                 let optionsArray: string[] = [];
                 if (typeof q.options === 'string') {
                   try {
-                    optionsArray = JSON.parse(q.options);
+                    const parsed = JSON.parse(q.options);
+                    optionsArray = Array.isArray(parsed) 
+                      ? parsed.filter((item): item is string => typeof item === "string")
+                      : [];
                   } catch (e) {
                     console.error(`[MentorService] Failed to parse options for question ${q.id}:`, e);
                     optionsArray = [];
                   }
                 } else if (Array.isArray(q.options)) {
-                  optionsArray = q.options;
+                  optionsArray = q.options.filter((item): item is string => typeof item === "string");
                 } else {
                   optionsArray = [];
                 }
@@ -3914,13 +3933,18 @@ export class MentorService {
           return null;
         }
 
-        profile = await prisma.mentor_profiles.create({
+        await prisma.mentor_profiles.create({
           data: {
             user_id: mentorId,
             full_name: user.name,
             bio: "",
             current_role: "",
           },
+        });
+
+        // Fetch the created profile with all relations
+        profile = await prisma.mentor_profiles.findUnique({
+          where: { user_id: mentorId },
           include: {
             users: {
               select: {
@@ -3929,12 +3953,34 @@ export class MentorService {
                 email: true,
               },
             },
-            mentor_experiences: [],
-            mentor_course_verifications: [],
-            mentor_tests: [],
+            mentor_experiences: {
+              orderBy: {
+                start_date: "desc",
+              },
+            },
+            mentor_course_verifications: {
+              where: {
+                is_active: true,
+              },
+              include: {
+                courses: true,
+                mentor_tests: true,
+              },
+            },
+            mentor_tests: {
+              where: {
+                status: {
+                  in: [TestStatus.PENDING, TestStatus.IN_PROGRESS],
+                },
+              },
+            },
           },
         });
         console.log(`[MentorService] Created default mentor profile for user ${mentorId}`);
+      }
+
+      if (!profile) {
+        throw new Error("Profile not found");
       }
 
       return {
@@ -4617,6 +4663,7 @@ export class MentorService {
         data: {
           session_id: sessionId,
           sender_id: mentorId,
+          sender_role: "MENTOR",
           content: zoomLink,
           message_type: "zoom_link",
         },

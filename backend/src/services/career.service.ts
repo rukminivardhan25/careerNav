@@ -46,7 +46,7 @@ export class CareerService {
     studentId: string,
     careerId: string
   ): Promise<CareerRecommendation | null> {
-    return await careerUtils.selectCareer(studentId, careerId);
+    return await careerUtils.selectCareer(studentId, careerId) as any;
   }
 
   /**
@@ -55,7 +55,7 @@ export class CareerService {
   async getSelectedCareer(
     studentId: string
   ): Promise<CareerRecommendation | null> {
-    return await careerUtils.getSelectedCareer(studentId);
+    return await careerUtils.getSelectedCareer(studentId) as any;
   }
 }
 

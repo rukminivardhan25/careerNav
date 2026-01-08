@@ -4,13 +4,7 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt";
 
-export interface AuthRequest extends Request {
-  user?: {
-    userId: string;
-    email: string;
-    role: string;
-  };
-}
+export type AuthRequest = Request;
 
 /**
  * Middleware to authenticate JWT tokens

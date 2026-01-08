@@ -124,7 +124,7 @@ export const paymentService = {
       }
 
       // Get topics ordered by week and session
-      const topics = plan.topics.sort((a, b) => {
+      const topics = plan.topics.sort((a: any, b: any) => {
         if (a.weekNumber !== b.weekNumber) {
           return a.weekNumber - b.weekNumber;
         }
@@ -166,7 +166,7 @@ export const paymentService = {
 
           // Find topic for this week and session
           const topic = topics.find(
-            (t) => t.weekNumber === week && t.sessionNumber === sessionsInWeek
+            (t: any) => t.weekNumber === week && t.sessionNumber === sessionsInWeek
           );
 
           if (!topic) {

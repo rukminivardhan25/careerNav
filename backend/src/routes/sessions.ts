@@ -92,25 +92,26 @@ router.post("/request", authenticateToken, async (req, res) => {
 
     // Validate mentor skill using mentor_test table ONLY
     // Do NOT lookup courses table - mentor skills are separate from student learning courses
+    const orConditions: any[] = [
+      {
+        course_name: {
+          contains: skillName,
+          mode: "insensitive",
+        },
+      },
+    ];
+    if (skillId) {
+      orConditions.push({
+        course_name: {
+          contains: skillId,
+          mode: "insensitive",
+        },
+      });
+    }
     const mentorTest = await prisma.mentor_tests.findFirst({
       where: {
         mentor_id: mentorId,
-        OR: [
-          {
-            course_name: {
-              contains: skillName,
-              mode: "insensitive",
-            },
-          },
-          ...(skillId ? [
-            {
-              course_name: {
-                contains: skillId,
-                mode: "insensitive",
-              },
-            },
-          ] : []),
-        ],
+        OR: orConditions,
         status: "PASSED",
       },
       orderBy: {
@@ -517,10 +518,11 @@ router.post("/:sessionId/mock-payment", authenticateToken, async (req, res) => {
  * Legacy endpoint - redirects to mock-payment
  * @deprecated Use /mock-payment instead
  */
-router.post("/:sessionId/payment", authenticateToken, async (req, res) => {
+router.post("/:sessionId/payment", authenticateToken, async (req, res, next) => {
   // Redirect to mock-payment endpoint
   req.url = req.url.replace("/payment", "/mock-payment");
-  return router.handle(req, res);
+  // Use next() to continue to the next route handler
+  next();
 });
 
 /**

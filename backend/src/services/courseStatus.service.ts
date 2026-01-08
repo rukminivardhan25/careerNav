@@ -88,7 +88,7 @@ export async function recalculateCourseStatus(
   } else {
     // Fallback: if no schedule items, check session status
     const SessionStatus = await import("@prisma/client").then((m) => m.SessionStatus);
-    allCompleted = sessions.every((s) => s.status === SessionStatus.COMPLETED);
+    allCompleted = sessions.every((s: any) => (s as any).status === SessionStatus.COMPLETED);
   }
 
   // Step 4: Determine final status

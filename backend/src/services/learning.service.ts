@@ -100,7 +100,14 @@ export class LearningService {
           total_skills: pathData.skills?.length || 0,
           estimated_duration_weeks: pathData.estimated_duration_weeks || 12,
         },
-      });
+        include: {
+          learning_skills: true,
+        },
+      }) as any;
+
+      if (!learningPath) {
+        throw new Error("Failed to create or update learning path");
+      }
 
       // Save skills to database
       if (pathData.skills && pathData.skills.length > 0) {
@@ -239,12 +246,15 @@ export class LearningService {
     });
 
     return skills.map((skill) => ({
-      id: skill.id.toString(),
+      learningPathId: learningPathId,
+      skillName: skill.name,
+      order: skill.skill_order,
+      id: skill.id,
       skill_id: skill.skill_id,
       name: skill.name,
       description: skill.description || "",
       skill_order: skill.skill_order,
-    }));
+    })) as any;
   }
 
   /**

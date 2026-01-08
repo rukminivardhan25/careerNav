@@ -118,7 +118,7 @@ export function getOngoingCoursesFromSessions(
           sessionId: s.id,
           paymentStatus: s.hasPayment,
           rawPayment: originalSession?.payments,
-          paymentStatusRaw: originalSession?.payments?.status,
+          paymentStatusRaw: originalSession?.payments && !Array.isArray(originalSession.payments) ? originalSession.payments.status : undefined,
           expectedStatus: PaymentStatus.SUCCESS
         };
       });

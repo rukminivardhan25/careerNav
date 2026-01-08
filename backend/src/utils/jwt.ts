@@ -8,9 +8,9 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
  * Generate JWT token for authenticated user
  */
 export function generateToken(payload: JWTPayload): string {
-  return jwt.sign(payload as object, JWT_SECRET, {
+  return jwt.sign(payload, JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN,
-  });
+  } as jwt.SignOptions);
 }
 
 /**

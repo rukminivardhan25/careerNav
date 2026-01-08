@@ -83,7 +83,7 @@ router.post(
           ? `${userProfile.education_type || ""} ${userProfile.branch || ""}`.trim() || "Student"
           : "Student",
         yearOrExperience: userProfile?.grade_or_year || userProfile?.experience_level || "Student",
-        skills: userProfile?.existing_skills?.join(", ") || primaryResume?.resume_data?.skills?.join(", ") || "General skills",
+        skills: (Array.isArray(userProfile?.existing_skills) ? (userProfile.existing_skills as string[]).join(", ") : null) || (primaryResume?.resume_data && typeof primaryResume.resume_data === 'object' && 'skills' in primaryResume.resume_data && Array.isArray((primaryResume.resume_data as any).skills) ? ((primaryResume.resume_data as any).skills as string[]).join(", ") : null) || "General skills",
         experienceSummary: buildExperienceSummary(primaryResume?.resume_data, userProfile),
       };
 

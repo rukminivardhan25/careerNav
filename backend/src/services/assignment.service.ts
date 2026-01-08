@@ -123,11 +123,11 @@ export class AssignmentService {
       // Format response
       return assignments.map((assignment) => {
         const rawSubmission = userRole === "STUDENT"
-          ? assignment.assignment_submissions[0] || null
+          ? (Array.isArray(assignment.assignment_submissions) ? assignment.assignment_submissions[0] : assignment.assignment_submissions) || null
           : assignment.assignment_submissions;
 
         // Format submission with review fields
-        const submission = rawSubmission
+        const submission = rawSubmission && !Array.isArray(rawSubmission)
           ? {
               id: rawSubmission.id,
               fileUrl: rawSubmission.file_url,
