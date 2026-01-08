@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { getCurrentUser, getAuthToken } from "@/lib/auth";
-import { API_BASE_URL } from "@/lib/api";
+import { API_BASE_URL, BASE_URL } from "@/lib/api";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -117,7 +117,7 @@ export default function Profile() {
           const photoUrl = profile.profile_photo_url;
           const fullUrl = photoUrl.startsWith("http")
             ? photoUrl
-            : `${API_URL.replace("/api", "")}${photoUrl}`;
+            : `${BASE_URL}${photoUrl}`;
           setProfilePhoto(fullUrl);
         } else {
           setProfilePhoto(null);
@@ -201,7 +201,7 @@ export default function Profile() {
         if (photoUrl) {
           const baseUrl = photoUrl.startsWith("http")
             ? photoUrl
-            : `${API_URL.replace("/api", "")}${photoUrl}`;
+            : `${BASE_URL}${photoUrl}`;
           const fullUrl = `${baseUrl}?t=${Date.now()}`; // Cache-busting
 
           setProfilePhoto(fullUrl);
