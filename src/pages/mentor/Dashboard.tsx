@@ -556,16 +556,16 @@ export default function MentorDashboard() {
 
   return (
     <DashboardLayout role="mentor" title="Dashboard">
-      <div className="space-y-8">
+      <div className="space-y-4 sm:space-y-6 lg:space-y-8">
         {/* Welcome section */}
-        <div className="glass-card rounded-xl p-6 lg:p-8 relative overflow-hidden">
+        <div className="glass-card rounded-xl p-4 sm:p-6 lg:p-8 relative overflow-hidden w-full max-w-full">
           <div className="absolute inset-0 bg-gradient-to-r from-secondary/5 to-primary/5" />
           <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div>
-              <h1 className="text-headline text-foreground mb-2">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg sm:text-headline text-foreground mb-2 break-words">
                 Good afternoon, {mentorName}! 👋
               </h1>
-              <p className="text-body text-muted-foreground">
+              <p className="text-sm sm:text-body text-muted-foreground break-words">
                 You have{" "}
                 <span className="text-primary font-semibold">
                   {normalizeArray(pendingRequests, []).length} session request{normalizeArray(pendingRequests, []).length !== 1 ? "s" : ""}
@@ -577,11 +577,11 @@ export default function MentorDashboard() {
                 .
               </p>
             </div>
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={() => navigate("/mentor/students")}>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+              <Button variant="outline" className="w-full sm:w-auto" onClick={() => navigate("/mentor/students")}>
                 View All Students
               </Button>
-              <Button variant="gradient" onClick={() => navigate("/mentor/reviews")}>
+              <Button variant="gradient" className="w-full sm:w-auto" onClick={() => navigate("/mentor/reviews")}>
                 View Reviews
                 <ArrowRight className="h-4 w-4" />
               </Button>
@@ -590,7 +590,7 @@ export default function MentorDashboard() {
         </div>
 
         {/* Stats grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           <StatCard
             title="Pending Requests"
             value={safeToString(stats.pendingRequests, "0")}
@@ -612,22 +612,22 @@ export default function MentorDashboard() {
         </div>
 
         {/* Verified Courses Section */}
-        <div className="glass-card rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <Award className="h-6 w-6 text-primary" />
-              <div>
-                <h2 className="text-title text-foreground">Your Verified Courses</h2>
-                <p className="text-body-sm text-muted-foreground">
+        <div className="glass-card rounded-xl p-4 sm:p-6 w-full max-w-full">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+              <Award className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
+              <div className="min-w-0">
+                <h2 className="text-base sm:text-title text-foreground break-words">Your Verified Courses</h2>
+                <p className="text-xs sm:text-body-sm text-muted-foreground break-words">
                   Courses you can mentor students in
                 </p>
               </div>
             </div>
-            <Button variant="outline" size="sm" onClick={() => navigate("/mentor/skill-test")}>
+            <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={() => navigate("/mentor/skill-test")}>
               Verify New Course
             </Button>
           </div>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             {normalizeArray(verifiedCourses, []).length === 0 ? (
               <div className="col-span-full text-center py-8">
                 <p className="text-body text-muted-foreground">
@@ -659,14 +659,14 @@ export default function MentorDashboard() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Students Requesting Sessions */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-title text-foreground">
+          <div className="lg:col-span-2 space-y-3 sm:space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+              <h2 className="text-base sm:text-title text-foreground break-words">
                 Students Requesting Sessions
               </h2>
-              <Badge variant="outline">
+              <Badge variant="outline" className="flex-shrink-0">
                 {normalizeArray(pendingRequests, []).length} Pending
               </Badge>
             </div>
@@ -718,34 +718,34 @@ export default function MentorDashboard() {
                   return (
                     <div
                       key={requestId}
-                      className="glass-card rounded-xl p-6 hover:shadow-card-hover transition-all duration-300"
+                      className="glass-card rounded-xl p-4 sm:p-6 hover:shadow-card-hover transition-all duration-300 w-full max-w-full"
                     >
-                      <div className="flex flex-col lg:flex-row lg:items-start gap-4">
+                      <div className="flex flex-col lg:flex-row lg:items-start gap-3 sm:gap-4">
                         {/* Student Info */}
-                        <div className="flex items-start gap-4 flex-1">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-body-sm">
+                        <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-xs sm:text-body-sm flex-shrink-0">
                             {initials}
                           </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="text-body font-semibold text-foreground">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                              <h3 className="text-sm sm:text-body font-semibold text-foreground break-words">
                                 {studentName}
                               </h3>
                               <Badge
                                 variant="outline"
-                                className="bg-warning/10 text-warning border-warning/20"
+                                className="bg-warning/10 text-warning border-warning/20 flex-shrink-0 w-fit"
                               >
                                 PENDING
                               </Badge>
                             </div>
-                            <p className="text-body-sm text-muted-foreground mb-2">
+                            <p className="text-xs sm:text-body-sm text-muted-foreground mb-2 break-words truncate">
                               {studentEmail}
                             </p>
-                            <div className="flex items-center gap-4 text-body-sm text-muted-foreground">
-                              <span className="font-medium text-foreground">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-body-sm text-muted-foreground">
+                              <span className="font-medium text-foreground break-words">
                                 Course: {courseName}
                               </span>
-                              <span className="flex items-center gap-1">
+                              <span className="flex items-center gap-1 flex-shrink-0">
                                 <Clock className="h-3 w-3" />
                                 {dateString}
                               </span>
@@ -754,10 +754,11 @@ export default function MentorDashboard() {
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                           <Button
                             variant="outline"
                             size="sm"
+                            className="w-full sm:w-auto"
                             onClick={() => handleRejectSession(requestId)}
                           >
                             <XCircle className="h-4 w-4 mr-2" />
@@ -766,6 +767,7 @@ export default function MentorDashboard() {
                           <Button
                             variant="gradient"
                             size="sm"
+                            className="w-full sm:w-auto"
                             onClick={() => handleApproveSession(requestId)}
                           >
                             <CheckCircle className="h-4 w-4 mr-2" />
@@ -775,14 +777,14 @@ export default function MentorDashboard() {
                       </div>
 
                       {/* Session Request Details */}
-                      <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+                      <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-muted/50 rounded-lg">
                         <div className="flex items-center gap-2 mb-2">
-                          <Calendar className="h-4 w-4 text-primary" />
-                          <span className="text-body-sm font-medium text-foreground">
+                          <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
+                          <span className="text-xs sm:text-body-sm font-medium text-foreground break-words">
                             {safeGet(request, "sessionType") || safeGet(request, "session_type") || "Session"}
                           </span>
                         </div>
-                        <p className="text-body-sm text-foreground">
+                        <p className="text-xs sm:text-body-sm text-foreground break-words">
                           {safeGet(request, "studentMessage") || safeGet(request, "student_message") || "No message provided"}
                         </p>
                       </div>
@@ -794,11 +796,11 @@ export default function MentorDashboard() {
           </div>
 
           {/* Right sidebar - Scheduled Sessions */}
-          <div className="space-y-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-title text-foreground">Scheduled Sessions</h2>
-                <Badge variant="outline">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex items-center justify-between gap-2">
+                <h2 className="text-base sm:text-title text-foreground break-words">Scheduled Sessions</h2>
+                <Badge variant="outline" className="flex-shrink-0">
                   {normalizeArray(scheduledSessions, []).length}
                 </Badge>
               </div>
@@ -841,49 +843,49 @@ export default function MentorDashboard() {
                     return (
                       <div
                         key={sessionId}
-                        className="glass-card p-4 rounded-xl hover:shadow-card-hover transition-all duration-300 border-l-4 border-primary"
+                        className="glass-card p-3 sm:p-4 rounded-xl hover:shadow-card-hover transition-all duration-300 border-l-4 border-primary w-full max-w-full"
                       >
-                        <div className="flex items-start gap-3 mb-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-body-sm">
+                        <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-xs sm:text-body-sm flex-shrink-0">
                             {initials}
                           </div>
-                          <div className="flex-1">
-                            <p className="text-body font-medium text-foreground">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm sm:text-body font-medium text-foreground break-words">
                               {studentName}
                             </p>
-                            <p className="text-caption text-muted-foreground">
+                            <p className="text-xs sm:text-caption text-muted-foreground break-words truncate">
                               {courseName}
                             </p>
                           </div>
                         </div>
-                        <div className="mb-3">
-                          <p className="text-body-sm font-medium text-foreground mb-1">
+                        <div className="mb-2 sm:mb-3">
+                          <p className="text-xs sm:text-body-sm font-medium text-foreground mb-1 break-words">
                             {sessionType}
                           </p>
-                          <div className="flex items-center gap-2 text-caption text-muted-foreground">
-                            <Clock className="h-3 w-3" />
-                            {formatSessionTime(scheduledAt)}
+                          <div className="flex items-center gap-2 text-xs sm:text-caption text-muted-foreground">
+                            <Clock className="h-3 w-3 flex-shrink-0" />
+                            <span className="break-words">{formatSessionTime(scheduledAt)}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                           <Badge
                             variant="outline"
                             className={
                               status === "SCHEDULED"
-                                ? "bg-success/10 text-success border-success/20"
-                                : "bg-primary/10 text-primary border-primary/20"
+                                ? "bg-success/10 text-success border-success/20 flex-shrink-0 w-fit"
+                                : "bg-primary/10 text-primary border-primary/20 flex-shrink-0 w-fit"
                             }
                           >
                             {status}
                           </Badge>
                           {zoomLink && (
-                            <Button variant="outline" size="sm" className="flex-1">
-                              <Video className="h-4 w-4 mr-2" />
+                            <Button variant="outline" size="sm" className="flex-1 sm:flex-1">
+                              <Video className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                               Join Zoom
                             </Button>
                           )}
                           {!zoomLink && status === "SCHEDULED" && (
-                            <Button variant="ghost" size="sm" className="flex-1">
+                            <Button variant="ghost" size="sm" className="flex-1 sm:flex-1">
                               Add Zoom Link
                             </Button>
                           )}
@@ -898,19 +900,19 @@ export default function MentorDashboard() {
         </div>
 
         {/* Support Link & Rate CareerNav */}
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-2 px-2">
           <Link
             to="/support"
-            className="text-body-sm text-primary hover:underline inline-flex items-center gap-1"
+            className="text-xs sm:text-body-sm text-primary hover:underline inline-flex items-center gap-1 break-words"
           >
             Need Help? We're here to support you.
           </Link>
           <div>
             <button
               onClick={() => setIsRatingModalOpen(true)}
-              className="text-body-sm text-primary hover:underline inline-flex items-center gap-1"
+              className="text-xs sm:text-body-sm text-primary hover:underline inline-flex items-center gap-1 break-words"
             >
-              <Star className="h-4 w-4" />
+              <Star className="h-3 w-3 sm:h-4 sm:w-4" />
               Rate CareerNav
             </button>
           </div>

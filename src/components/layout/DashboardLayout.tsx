@@ -61,23 +61,23 @@ export function DashboardLayout({ children, role, title }: DashboardLayoutProps)
       <div className="lg:pl-64">
         {/* Top bar */}
         <header className="sticky top-0 z-20 h-16 bg-background/80 backdrop-blur-lg border-b border-border">
-          <div className="flex items-center justify-between h-full px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between h-full px-3 sm:px-4 md:px-6 lg:px-8">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
               <Button
                 variant="ghost"
                 size="icon"
-                className="lg:hidden"
+                className="lg:hidden flex-shrink-0"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 aria-label="Toggle sidebar"
               >
                 <Menu className="h-5 w-5" />
               </Button>
               {title && (
-                <h1 className="text-title text-foreground">{title}</h1>
+                <h1 className="text-title text-foreground truncate">{title}</h1>
               )}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
               <NotificationBell />
               <Button
                 variant="ghost"
@@ -96,7 +96,7 @@ export function DashboardLayout({ children, role, title }: DashboardLayoutProps)
         </header>
 
         {/* Page content */}
-        <main id="main-content" className="p-4 sm:p-6 lg:p-8">
+        <main id="main-content" className="p-3 sm:p-4 md:p-6 lg:p-8">
           {children}
         </main>
       </div>
