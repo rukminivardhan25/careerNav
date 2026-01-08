@@ -1,0 +1,947 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                                      String                         @id @default(cuid())
+  email                                   String                         @unique
+  name                                    String
+  role                                    Role
+  provider                                String                         @default("google")
+  createdAt                               DateTime                       @default(now())
+  updatedAt                               DateTime                       @updatedAt
+  password                                String?                        @db.VarChar(255)
+  profile_completed                       Boolean?                       @default(false)
+  career_recommendations                  career_recommendations[]
+  cover_letters                           cover_letters[]
+  mentor_profiles                         mentor_profiles?
+  resumes                                 resumes[]
+  selected_careers                        selected_careers?
+  student_assessments                     student_assessments[]
+  student_learning_progress               student_learning_progress[]
+  student_profiles                        student_profiles?
+  student_industry_insights               student_industry_insights[]    @relation("StudentIndustryInsights")
+  user_activity                           user_activity[]
+  sessions_as_student                     sessions[]                     @relation("StudentSessions")
+  sessions_as_mentor                      sessions[]                     @relation("MentorSessions")
+  course_enrollments_as_student           course_enrollments[]           @relation("StudentEnrollments")
+  course_enrollments_as_mentor            course_enrollments[]           @relation("MentorEnrollments")
+  notifications                           notifications[]
+  session_messages                        session_messages[]
+  mentor_assignments                      assignments[]                  @relation("MentorAssignments")
+  student_submissions                     assignment_submissions[]       @relation("StudentSubmissions")
+  resume_review_requests_as_student       resume_review_requests[]       @relation("ResumeReviewStudent")
+  resume_review_requests_as_mentor        resume_review_requests[]       @relation("ResumeReviewMentor")
+  cover_letter_review_requests_as_student cover_letter_review_requests[] @relation("CoverLetterReviewStudent")
+  cover_letter_review_requests_as_mentor  cover_letter_review_requests[] @relation("CoverLetterReviewMentor")
+  career_nav_ratings                      career_nav_ratings[]
+
+  @@map("users")
+}
+
+/// DEPRECATED: This model is kept for backward compatibility but should not be used for new assessments
+/// Answers are now stored temporarily in frontend sessionStorage and sent to backend only for evaluation
+/// Individual answers are NOT persisted - only final outcomes (scores, recommendations) are stored
+model assessment_answers {
+  id                    Int                  @id @default(autoincrement())
+  student_assessment_id Int
+  question_id           Int
+  answer_text           String
+  answer_index          Int?
+  is_correct            Boolean?
+  points_earned         Int?                 @default(0)
+  answered_at           DateTime?            @default(now()) @db.Timestamp(6)
+  student_assessments   student_assessments  @relation(fields: [student_assessment_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_assessment_answers_assessment")
+  assessment_questions  assessment_questions @relation(fields: [question_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_assessment_answers_question")
+
+  @@unique([student_assessment_id, question_id], map: "unique_answer_per_question")
+  @@index([question_id], map: "idx_assessment_answers_question")
+  @@index([student_assessment_id], map: "idx_assessment_answers_student_assessment")
+}
+
+/// DEPRECATED: This model is kept for backward compatibility but should not be used for new assessments
+/// Questions are now generated on-the-fly and stored in frontend sessionStorage only
+/// This table may contain legacy data but new assessments should NOT store questions here
+model assessment_questions {
+  id                    Int                  @id @default(autoincrement())
+  assessment_id         Int
+  question_text         String
+  question_type         String               @db.VarChar(50)
+  options               Json?
+  correct_answer        String?
+  points                Int?                 @default(1)
+  question_order        Int
+  created_at            DateTime?            @default(now()) @db.Timestamp(6)
+  student_assessment_id Int?
+  generated_by_ai       Boolean?             @default(true)
+  ai_metadata           Json?
+  assessment_answers    assessment_answers[]
+  assessments           assessments          @relation(fields: [assessment_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_assessment_questions_assessment")
+  student_assessments   student_assessments? @relation(fields: [student_assessment_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_assessment_questions_student_assessment")
+
+  @@index([assessment_id], map: "idx_assessment_questions_assessment")
+  @@index([assessment_id, question_order], map: "idx_assessment_questions_order")
+  @@index([student_assessment_id], map: "idx_assessment_questions_student_assessment")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model assessments {
+  id                   Int                    @id @default(autoincrement())
+  title                String                 @db.VarChar(255)
+  description          String?
+  type                 String                 @db.VarChar(50)
+  duration_minutes     Int
+  total_questions      Int
+  is_active            Boolean?               @default(true)
+  created_at           DateTime?              @default(now()) @db.Timestamp(6)
+  updated_at           DateTime?              @default(now()) @db.Timestamp(6)
+  generated_by_ai      Boolean?               @default(true)
+  assessment_questions assessment_questions[]
+  student_assessments  student_assessments[]
+
+  @@index([is_active], map: "idx_assessments_active")
+  @@index([type], map: "idx_assessments_type")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model career_recommendations {
+  id                        Int                  @id @default(autoincrement())
+  student_id                String               @db.VarChar(255)
+  career_title              String               @db.VarChar(255)
+  career_id                 String               @db.VarChar(100)
+  match_percentage          Int
+  description               String?
+  salary_min                Decimal?             @db.Decimal(10, 2)
+  salary_max                Decimal?             @db.Decimal(10, 2)
+  salary_currency           String?              @default("₹") @db.VarChar(10)
+  salary_unit               String?              @default("LPA") @db.VarChar(20)
+  growth_indicator          String?              @db.VarChar(255)
+  growth_type               String?              @db.VarChar(50)
+  skills                    String[]
+  based_on_assessment_id    Int?
+  created_at                DateTime?            @default(now()) @db.Timestamp(6)
+  generated_from_profile    Json?
+  generated_from_assessment Json?
+  ai_provider               String?              @default("gemini") @db.VarChar(50)
+  prompt_version            String?              @db.VarChar(50)
+  student_assessments       student_assessments? @relation(fields: [based_on_assessment_id], references: [id], onUpdate: NoAction, map: "fk_career_recommendations_assessment")
+  users                     User                 @relation(fields: [student_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_career_recommendations_student")
+  selected_careers          selected_careers[]
+
+  @@index([student_id, match_percentage(sort: Desc)], map: "idx_career_recommendations_match")
+  @@index([student_id], map: "idx_career_recommendations_student")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cover_letters {
+  id                           Int                            @id @default(autoincrement())
+  student_id                   String                         @db.VarChar(255)
+  title                        String?                        @db.VarChar(255)
+  job_title                    String?                        @db.VarChar(255)
+  company_name                 String?                        @db.VarChar(255)
+  job_description              String?                        @db.Text
+  cover_letter_text            String                         @db.Text
+  has_job_description          Boolean?                       @default(false)
+  is_primary                   Boolean?                       @default(false)
+  version                      Int?                           @default(1)
+  created_at                   DateTime?                      @default(now()) @db.Timestamp(6)
+  updated_at                   DateTime?                      @default(now()) @db.Timestamp(6)
+  users                        User                           @relation(fields: [student_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_cover_letters_student")
+  cover_letter_review_requests cover_letter_review_requests[]
+
+  @@index([student_id], map: "idx_cover_letters_student")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model industry_insights {
+  id               Int       @id @default(autoincrement())
+  industry         String    @db.VarChar(255)
+  industry_id      String    @db.VarChar(100)
+  role_title       String?   @db.VarChar(255)
+  experience_level String?   @db.VarChar(50)
+  location         String?   @default("India") @db.VarChar(255)
+  salary_min       Decimal?  @db.Decimal(10, 2)
+  salary_max       Decimal?  @db.Decimal(10, 2)
+  salary_currency  String?   @default("₹") @db.VarChar(10)
+  salary_unit      String?   @default("LPA") @db.VarChar(20)
+  growth_trend     Json?
+  roles_in_demand  Json?
+  skills_in_demand String[]
+  summary_points   String[]
+  last_updated     DateTime  @db.Date
+  created_at       DateTime? @default(now()) @db.Timestamp(6)
+  updated_at       DateTime? @default(now()) @db.Timestamp(6)
+
+  @@unique([industry_id, role_title, experience_level, location], map: "unique_industry_insight")
+  @@index([industry_id], map: "idx_industry_insights_industry")
+  @@index([last_updated(sort: Desc)], map: "idx_industry_insights_updated")
+}
+
+/// Branch-specific industry insights updated weekly
+model branch_industry_insights {
+  id           Int       @id @default(autoincrement())
+  branch       String    @db.VarChar(100) // e.g., CSE, ECE, EEE, etc.
+  week_number  Int // Week number of the year (1-52)
+  year         Int // Year (e.g., 2025)
+  content      Json // Structured insights content (trends, opportunities, skills, etc.)
+  summary      String?   @db.Text // Short summary text
+  last_updated DateTime  @default(now()) @db.Timestamp(6)
+  created_at   DateTime? @default(now()) @db.Timestamp(6)
+  updated_at   DateTime? @updatedAt @db.Timestamp(6)
+
+  @@unique([branch, week_number, year], map: "unique_branch_weekly_insight")
+  @@index([branch, year, week_number(sort: Desc)], map: "idx_branch_insights_week")
+  @@index([last_updated(sort: Desc)], map: "idx_branch_insights_updated")
+}
+
+model student_industry_insights {
+  id           Int       @id @default(autoincrement())
+  user_id      String    @db.VarChar(255) // Student user ID
+  week_number  Int // Week number of the year (1-52)
+  year         Int // Year (e.g., 2025)
+  content      Json // Structured insights content (trends, opportunities, skills, etc.)
+  summary      String?   @db.Text // Short summary text
+  last_updated DateTime  @default(now()) @db.Timestamp(6)
+  created_at   DateTime? @default(now()) @db.Timestamp(6)
+  updated_at   DateTime? @updatedAt @db.Timestamp(6)
+  users        User      @relation("StudentIndustryInsights", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, week_number, year], map: "unique_student_weekly_insight")
+  @@index([user_id, year, week_number(sort: Desc)], map: "idx_student_insights_week")
+  @@index([last_updated(sort: Desc)], map: "idx_student_insights_updated")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model learning_paths {
+  id                        Int                         @id @default(autoincrement())
+  career_id                 String                      @unique @db.VarChar(100)
+  title                     String                      @db.VarChar(255)
+  description               String?
+  total_skills              Int?                        @default(0)
+  estimated_duration_weeks  Int?
+  is_active                 Boolean?                    @default(true)
+  created_at                DateTime?                   @default(now()) @db.Timestamp(6)
+  updated_at                DateTime?                   @default(now()) @db.Timestamp(6)
+  learning_skills           learning_skills[]
+  student_learning_progress student_learning_progress[]
+
+  @@index([is_active], map: "idx_learning_paths_active")
+  @@index([career_id], map: "idx_learning_paths_career_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model learning_skills {
+  id                   Int            @id @default(autoincrement())
+  learning_path_id     Int
+  skill_id             String         @db.VarChar(100)
+  name                 String         @db.VarChar(255)
+  description          String?
+  long_description     String?
+  skill_order          Int
+  youtube_videos       Json?
+  external_resources   Json?
+  skill_test_questions Json?
+  created_at           DateTime?      @default(now()) @db.Timestamp(6)
+  updated_at           DateTime?      @default(now()) @db.Timestamp(6)
+  generated_by_ai      Boolean?       @default(false)
+  ai_metadata          Json?
+  learning_paths       learning_paths @relation(fields: [learning_path_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_learning_skills_path")
+
+  @@unique([learning_path_id, skill_id], map: "unique_skill_per_path")
+  @@index([learning_path_id, skill_order], map: "idx_learning_skills_order")
+  @@index([learning_path_id], map: "idx_learning_skills_path")
+}
+
+model mentor_profiles {
+  id      Int    @id @default(autoincrement())
+  user_id String @unique @db.VarChar(255)
+
+  // Basic Information
+  full_name         String? @db.VarChar(100)
+  bio               String? @db.Text
+  current_role      String? @db.VarChar(50) // "Working Professional", "Student", "Freelancer"
+  profile_photo_url String? @db.VarChar(500)
+
+  // Educational Details (REQUIRED)
+  highest_qualification String? @db.VarChar(100) // "B.Tech", "M.Tech", "PhD", etc.
+  degree                String? @db.VarChar(255) // "Master of Technology"
+  branch                String? @db.VarChar(100) // "Computer Science"
+  college               String? @db.VarChar(255) // "IIT Delhi"
+  graduation_year       Int? // 2015
+  current_year          String? @db.VarChar(50) // "3rd Year" (if still studying)
+
+  // Experience Details (OPTIONAL)
+  experience_years Int?
+  profession       String?  @db.VarChar(100)
+  company          String?  @db.VarChar(150)
+  expertise_areas  String[]
+
+  // Professional Details
+  linkedin_url      String?  @db.VarChar(255)
+  profile_completed Boolean? @default(false)
+
+  // Rating & Reviews
+  rating        Decimal? @default(0) @db.Decimal(3, 2)
+  total_reviews Int?     @default(0)
+
+  // Session Management
+  session_types    String[] // ["Career Counseling", "Resume Review", "Mock Interview"]
+  pricing_per_hour Decimal? @db.Decimal(10, 2) // Price in INR
+  available_slots  Json? // Weekly schedule
+
+  // Timestamps
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+
+  // Relations
+  users                       User                          @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  mentor_courses              mentor_courses[]
+  mentor_experiences          mentor_experiences[]
+  mentor_tests                mentor_tests[]
+  mentor_course_verifications mentor_course_verifications[]
+
+  @@index([user_id], map: "idx_mentor_profiles_user_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model resumes {
+  id                     Int                      @id @default(autoincrement())
+  student_id             String                   @db.VarChar(255)
+  title                  String?                  @db.VarChar(255)
+  resume_data            Json
+  generated_resume_text  String?
+  is_primary             Boolean?                 @default(false)
+  version                Int?                     @default(1)
+  created_at             DateTime?                @default(now()) @db.Timestamp(6)
+  updated_at             DateTime?                @default(now()) @db.Timestamp(6)
+  users                  User                     @relation(fields: [student_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_resumes_student")
+  resume_review_requests resume_review_requests[]
+
+  @@index([student_id], map: "idx_resumes_student")
+}
+
+model resume_review_requests {
+  id              Int          @id @default(autoincrement())
+  resume_id       Int
+  student_id      String       @db.VarChar(255)
+  mentor_id       String       @db.VarChar(255)
+  status          ReviewStatus @default(PENDING)
+  mentor_feedback String?      @db.Text
+  rating          Int? // Rating: 1-5 stars (required when status = COMPLETED)
+  reviewed_at     DateTime?    @db.Timestamp(6)
+  created_at      DateTime?    @default(now()) @db.Timestamp(6)
+  updated_at      DateTime?    @default(now()) @db.Timestamp(6)
+  resumes         resumes      @relation(fields: [resume_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_student   User         @relation("ResumeReviewStudent", fields: [student_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_mentor    User         @relation("ResumeReviewMentor", fields: [mentor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  // Note: Multiple reviews allowed per resume (history). Only ONE PENDING review allowed at a time (enforced in application logic).
+
+  @@index([resume_id], map: "idx_resume_review_requests_resume")
+  @@index([student_id], map: "idx_resume_review_requests_student")
+  @@index([mentor_id], map: "idx_resume_review_requests_mentor")
+  @@index([status], map: "idx_resume_review_requests_status")
+}
+
+model cover_letter_review_requests {
+  id              Int           @id @default(autoincrement())
+  cover_letter_id Int
+  student_id      String        @db.VarChar(255)
+  mentor_id       String        @db.VarChar(255)
+  status          ReviewStatus  @default(PENDING)
+  mentor_feedback String?       @db.Text
+  rating          Int? // Rating: 1-5 stars (required when status = VERIFIED)
+  reviewed_at     DateTime?     @db.Timestamp(6)
+  created_at      DateTime?     @default(now()) @db.Timestamp(6)
+  updated_at      DateTime?     @default(now()) @db.Timestamp(6)
+  cover_letters   cover_letters @relation(fields: [cover_letter_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_student   User          @relation("CoverLetterReviewStudent", fields: [student_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_mentor    User          @relation("CoverLetterReviewMentor", fields: [mentor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  // Note: Multiple reviews allowed per cover letter (history). Only ONE PENDING review allowed at a time (enforced in application logic).
+
+  @@index([cover_letter_id], map: "idx_cover_letter_review_requests_cover_letter")
+  @@index([student_id], map: "idx_cover_letter_review_requests_student")
+  @@index([mentor_id], map: "idx_cover_letter_review_requests_mentor")
+  @@index([status], map: "idx_cover_letter_review_requests_status")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model selected_careers {
+  id                              Int                     @id @default(autoincrement())
+  student_id                      String                  @unique @db.VarChar(255)
+  career_id                       String                  @db.VarChar(100)
+  career_title                    String                  @db.VarChar(255)
+  selected_from_recommendation_id Int?
+  selected_at                     DateTime?               @default(now()) @db.Timestamp(6)
+  updated_at                      DateTime?               @default(now()) @db.Timestamp(6)
+  career_recommendations          career_recommendations? @relation(fields: [selected_from_recommendation_id], references: [id], onUpdate: NoAction, map: "fk_selected_careers_recommendation")
+  users                           User                    @relation(fields: [student_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_selected_careers_student")
+
+  @@index([student_id], map: "idx_selected_careers_student")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model skill_completions {
+  id                           Int                       @id @default(autoincrement())
+  student_learning_progress_id Int
+  skill_id                     String                    @db.VarChar(100)
+  skill_test_score             Decimal?                  @db.Decimal(5, 2)
+  completed_at                 DateTime?                 @default(now()) @db.Timestamp(6)
+  time_spent_minutes           Int?
+  student_learning_progress    student_learning_progress @relation(fields: [student_learning_progress_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_skill_completions_progress")
+
+  @@unique([student_learning_progress_id, skill_id], map: "unique_completion_per_skill")
+  @@index([student_learning_progress_id], map: "idx_skill_completions_progress")
+  @@index([skill_id], map: "idx_skill_completions_skill")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model student_assessments {
+  id                     Int                      @id @default(autoincrement())
+  student_id             String                   @db.VarChar(255)
+  assessment_id          Int
+  assessment_type        String?                  @db.VarChar(50) // "aptitude" | "personality"
+  status                 String                   @default("not_started") @db.VarChar(20) // "not_started" | "in_progress" | "completed"
+  score                  Decimal?                 @db.Decimal(5, 2) // Final score (0-100)
+  total_points           Int?
+  earned_points          Int?
+  started_at             DateTime?                @db.Timestamp(6)
+  completed_at           DateTime?                @db.Timestamp(6)
+  time_taken_minutes     Int?
+  created_at             DateTime?                @default(now()) @db.Timestamp(6)
+  updated_at             DateTime?                @default(now()) @db.Timestamp(6)
+  ai_provider            String?                  @default("groq") @db.VarChar(50) // "groq" | "gemini"
+  prompt_version         String?                  @db.VarChar(50)
+  // Note: Questions are NOT stored - they are generated on-the-fly and kept in frontend sessionStorage
+  // Note: Answers are NOT stored individually - only final outcomes are persisted
+  assessment_answers     assessment_answers[] // Kept for backward compatibility (deprecated)
+  assessment_questions   assessment_questions[] // Kept for backward compatibility (deprecated)
+  career_recommendations career_recommendations[]
+  assessments            assessments              @relation(fields: [assessment_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_student_assessments_assessment")
+  users                  User                     @relation(fields: [student_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_student_assessments_student")
+
+  @@index([assessment_id], map: "idx_student_assessments_assessment")
+  @@index([student_id, status], map: "idx_student_assessments_status")
+  @@index([student_id], map: "idx_student_assessments_student")
+  @@index([assessment_type], map: "idx_student_assessments_type")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model student_learning_progress {
+  id                  Int                 @id @default(autoincrement())
+  student_id          String              @db.VarChar(255)
+  learning_path_id    Int
+  status              String              @default("not_started") @db.VarChar(20)
+  skills_completed    Int?                @default(0)
+  total_skills        Int
+  progress_percentage Int?                @default(0)
+  current_skill_id    String?             @db.VarChar(100)
+  started_at          DateTime?           @db.Timestamp(6)
+  completed_at        DateTime?           @db.Timestamp(6)
+  last_accessed_at    DateTime?           @default(now()) @db.Timestamp(6)
+  created_at          DateTime?           @default(now()) @db.Timestamp(6)
+  updated_at          DateTime?           @default(now()) @db.Timestamp(6)
+  skill_completions   skill_completions[]
+  learning_paths      learning_paths      @relation(fields: [learning_path_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_student_learning_progress_path")
+  users               User                @relation(fields: [student_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_student_learning_progress_student")
+
+  @@unique([student_id, learning_path_id], map: "unique_progress_per_student_path")
+  @@index([student_id, status], map: "idx_student_learning_progress_status")
+  @@index([student_id], map: "idx_student_learning_progress_student")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model student_profiles {
+  id                Int       @id @default(autoincrement())
+  user_id           String    @unique @db.VarChar(255)
+  full_name         String?   @db.VarChar(100)
+  grade_or_year     String?   @db.VarChar(50)
+  school_or_college String?   @db.VarChar(150)
+  interests         String[]
+  career_goals      String?
+  bio               String?
+  profile_completed Boolean?  @default(false)
+  created_at        DateTime? @default(now()) @db.Timestamp(6)
+  updated_at        DateTime? @default(now()) @db.Timestamp(6)
+  primary_domain    String?   @db.VarChar(100)
+  existing_skills   String[]  @default([])
+  other_skills      String?
+  experience_level  String?   @db.VarChar(50)
+  profile_verified  Boolean?  @default(false)
+  education_type    String?   @db.VarChar(50)
+  branch            String?   @db.VarChar(100)
+  phone             String?   @db.VarChar(20)
+  date_of_birth     DateTime? @db.Date
+  profile_photo_url String?   @db.VarChar(500)
+  profile_badges    String[]  @default([])
+  gpa               String?   @db.VarChar(20)
+  linkedin_url      String?   @db.VarChar(500)
+  github_url        String?   @db.VarChar(500)
+  portfolio_url     String?   @db.VarChar(500)
+  twitter_url       String?   @db.VarChar(500)
+  website_url       String?   @db.VarChar(500)
+  users             User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([user_id], map: "idx_student_profiles_user_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_activity {
+  id            Int       @id @default(autoincrement())
+  user_id       String    @db.VarChar(255)
+  activity_date DateTime  @db.Date
+  activity_type String?   @default("general") @db.VarChar(50)
+  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  users         User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user_activity_user")
+
+  @@unique([user_id, activity_date], map: "unique_activity_per_day")
+  @@index([user_id, activity_date(sort: Desc)], map: "idx_user_activity_date")
+  @@index([user_id], map: "idx_user_activity_user")
+}
+
+/// Courses mapped to learning paths (career-based)
+model courses {
+  id                          Int                           @id @default(autoincrement())
+  career_id                   String?                       @db.VarChar(100) // Maps to learning_paths.career_id (nullable for AI-created courses)
+  title                       String                        @db.VarChar(255)
+  description                 String?
+  is_active                   Boolean?                      @default(true)
+  created_by                  String?                       @default("SYSTEM") @db.VarChar(50) // "SYSTEM", "MENTOR_AI", "ADMIN"
+  created_at                  DateTime?                     @default(now()) @db.Timestamp(6)
+  updated_at                  DateTime?                     @default(now()) @db.Timestamp(6)
+  mentor_courses              mentor_courses[]
+  sessions                    sessions[]
+  mentor_course_verifications mentor_course_verifications[]
+  skill_test_questions        skill_test_questions[]
+
+  @@unique([title], map: "unique_course_title") // Case-insensitive uniqueness enforced in application logic
+  @@index([career_id], map: "idx_courses_career_id")
+  @@index([is_active], map: "idx_courses_active")
+  @@index([title], map: "idx_courses_title")
+}
+
+/// Skill test questions for mentor verification
+model skill_test_questions {
+  id             Int      @id @default(autoincrement())
+  course_id      Int
+  question_text  String   @db.Text
+  options        Json // Array of 4 options
+  correct_answer Int // Index of correct answer (0-3)
+  question_type  String   @db.VarChar(50) // "conceptual", "practical", "scenario"
+  difficulty     String   @db.VarChar(20) // "BEGINNER", "INTERMEDIATE", "ADVANCED"
+  explanation    String?  @db.Text
+  points         Int      @default(1)
+  created_at     DateTime @default(now()) @db.Timestamp(6)
+  updated_at     DateTime @updatedAt @db.Timestamp(6)
+  courses        courses  @relation(fields: [course_id], references: [id], onDelete: Cascade)
+
+  @@index([course_id], map: "idx_skill_test_questions_course")
+  @@index([difficulty], map: "idx_skill_test_questions_difficulty")
+  @@index([question_type], map: "idx_skill_test_questions_type")
+}
+
+/// Many-to-many: Mentors can teach multiple courses
+model mentor_courses {
+  id              Int             @id @default(autoincrement())
+  mentor_id       String          @db.VarChar(255) // mentor_profiles.user_id
+  course_id       Int
+  created_at      DateTime?       @default(now()) @db.Timestamp(6)
+  mentor_profiles mentor_profiles @relation(fields: [mentor_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  courses         courses         @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([mentor_id, course_id], map: "unique_mentor_course")
+  @@index([mentor_id], map: "idx_mentor_courses_mentor")
+  @@index([course_id], map: "idx_mentor_courses_course")
+}
+
+/// Session requests and bookings
+model sessions {
+  id                   String             @id @default(cuid())
+  student_id           String             @db.VarChar(255)
+  mentor_id            String             @db.VarChar(255)
+  course_id            Int
+  session_type         String             @db.VarChar(100) // e.g., "Career Counseling", "Resume Review"
+  scheduled_at         DateTime           @db.Timestamp(6) // Session start time
+  end_time             DateTime?          @db.Timestamp(6) // Session end time (calculated: scheduled_at + 1 hour)
+  status               SessionStatus      @default(PENDING)
+  student_message      String?            @db.Text
+  zoom_link            String?            @db.VarChar(500)
+  zoom_link_expires_at DateTime?          @db.Timestamp(6)
+  created_at           DateTime?          @default(now()) @db.Timestamp(6)
+  updated_at           DateTime?          @default(now()) @db.Timestamp(6)
+  completed_at         DateTime?          @db.Timestamp(6)
+  skill_id             String?            @db.VarChar(100)
+  skill_name           String             @db.VarChar(255) // NOT NULL - snapshot saved at connection time
+  plan_id              Int?
+  reminder_sent        Boolean?           @default(false) // Track if 1-hour reminder notification was sent
+  users_student        User               @relation("StudentSessions", fields: [student_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_mentor         User               @relation("MentorSessions", fields: [mentor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  courses              courses            @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  plans                plans?             @relation(fields: [plan_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  payments             payments?
+  session_messages     session_messages[]
+  admin_ledger         admin_ledger[]
+  session_schedule     session_schedule[]
+  assignments          assignments[]
+
+  @@index([student_id, status], map: "idx_sessions_student_status")
+  @@index([mentor_id, status], map: "idx_sessions_mentor_status")
+  @@index([course_id], map: "idx_sessions_course")
+  @@index([scheduled_at], map: "idx_sessions_scheduled")
+  @@index([status], map: "idx_sessions_status")
+  @@index([plan_id], map: "idx_sessions_plan")
+}
+
+/// Payment records (UPI payments to admin escrow)
+model payments {
+  id                 String        @id @default(cuid())
+  session_id         String        @unique @db.VarChar(255)
+  amount             Decimal       @db.Decimal(10, 2)
+  currency           String        @default("INR") @db.VarChar(10)
+  gateway            String        @default("razorpay") @db.VarChar(50) // razorpay, phonepe, cashfree
+  gateway_payment_id String?       @db.VarChar(255) // Payment gateway transaction ID
+  gateway_order_id   String?       @db.VarChar(255) // Gateway order ID
+  status             PaymentStatus @default(PENDING)
+  paid_to            String        @default("ADMIN") @db.VarChar(50) // Always ADMIN (escrow)
+  payment_method     String?       @default("UPI") @db.VarChar(50)
+  payment_data       Json? // Gateway response data
+  created_at         DateTime?     @default(now()) @db.Timestamp(6)
+  updated_at         DateTime?     @default(now()) @db.Timestamp(6)
+  completed_at       DateTime?     @db.Timestamp(6)
+  sessions           sessions      @relation(fields: [session_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  admin_ledger       admin_ledger?
+
+  @@index([session_id], map: "idx_payments_session")
+  @@index([status], map: "idx_payments_status")
+  @@index([gateway_payment_id], map: "idx_payments_gateway_id")
+}
+
+/// Course enrollments - persisted course status (student + mentor + skill)
+/// This is the SINGLE SOURCE OF TRUTH for course status
+model course_enrollments {
+  id                        String       @id @default(cuid())
+  student_id                String       @db.VarChar(255)
+  mentor_id                 String       @db.VarChar(255)
+  skill_name                String       @db.VarChar(255)
+  course_status             CourseStatus @default(PAYMENT_PENDING)
+  created_at                DateTime?    @default(now()) @db.Timestamp(6)
+  updated_at                DateTime?    @updatedAt @db.Timestamp(6)
+  last_status_calculated_at DateTime?    @db.Timestamp(6) // Track when status was last recalculated
+
+  users_student User @relation("StudentEnrollments", fields: [student_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_mentor  User @relation("MentorEnrollments", fields: [mentor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([student_id, mentor_id, skill_name], map: "unique_course_enrollment")
+  @@index([student_id, course_status], map: "idx_enrollments_student_status")
+  @@index([mentor_id], map: "idx_enrollments_mentor")
+  @@index([course_status], map: "idx_enrollments_status")
+  @@index([student_id, mentor_id], map: "idx_enrollments_student_mentor")
+}
+
+/// Admin wallet and mentor payout tracking
+model admin_ledger {
+  id                   Int          @id @default(autoincrement())
+  payment_id           String       @unique @db.VarChar(255)
+  session_id           String       @db.VarChar(255)
+  mentor_id            String       @db.VarChar(255)
+  amount               Decimal      @db.Decimal(10, 2) // Amount received from student
+  mentor_payout_amount Decimal?     @db.Decimal(10, 2) // Amount to be paid to mentor (after platform fee)
+  platform_fee         Decimal?     @db.Decimal(10, 2) // Platform commission
+  payout_status        PayoutStatus @default(PENDING)
+  payout_released_at   DateTime?    @db.Timestamp(6)
+  created_at           DateTime?    @default(now()) @db.Timestamp(6)
+  updated_at           DateTime?    @default(now()) @db.Timestamp(6)
+  sessions             sessions     @relation(fields: [session_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  payments             payments     @relation(fields: [payment_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([payment_id], map: "idx_admin_ledger_payment")
+  @@index([mentor_id, payout_status], map: "idx_admin_ledger_mentor_payout")
+  @@index([payout_status], map: "idx_admin_ledger_payout_status")
+}
+
+/// Session-based chat messages (only enabled after payment)
+model session_messages {
+  id           Int       @id @default(autoincrement())
+  session_id   String    @db.VarChar(255)
+  sender_id    String    @db.VarChar(255)
+  sender_role  String    @db.VarChar(50) // STUDENT or MENTOR
+  content      String    @db.Text
+  message_type String    @default("text") @db.VarChar(50) // text, zoom_link, file
+  created_at   DateTime? @default(now()) @db.Timestamp(6)
+  sessions     sessions  @relation(fields: [session_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users        User      @relation(fields: [sender_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([session_id, created_at(sort: Desc)], map: "idx_session_messages_session_time")
+  @@index([sender_id], map: "idx_session_messages_sender")
+}
+
+/// Assignments created by mentors for students
+model assignments {
+  id                     Int                      @id @default(autoincrement())
+  session_id             String                   @db.VarChar(255)
+  mentor_id              String                   @db.VarChar(255)
+  title                  String                   @db.VarChar(255)
+  description            String?                  @db.Text
+  created_at             DateTime                 @default(now()) @db.Timestamp(6)
+  due_at                 DateTime                 @db.Timestamp(6)
+  is_active              Boolean                  @default(true)
+  sessions               sessions                 @relation(fields: [session_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_mentor           User                     @relation("MentorAssignments", fields: [mentor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  assignment_submissions assignment_submissions[]
+
+  @@index([session_id], map: "idx_assignments_session")
+  @@index([mentor_id], map: "idx_assignments_mentor")
+  @@index([due_at], map: "idx_assignments_due")
+  @@index([is_active], map: "idx_assignments_active")
+}
+
+/// Student submissions for assignments
+model assignment_submissions {
+  id              Int              @id @default(autoincrement())
+  assignment_id   Int
+  student_id      String           @db.VarChar(255)
+  file_url        String           @db.VarChar(500)
+  submitted_at    DateTime         @default(now()) @db.Timestamp(6)
+  status          SubmissionStatus @default(SUBMITTED)
+  review_status   ReviewStatus     @default(PENDING)
+  mentor_feedback String?          @db.Text
+  reviewed_at     DateTime?        @db.Timestamp(6)
+  assignments     assignments      @relation(fields: [assignment_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_student   User             @relation("StudentSubmissions", fields: [student_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([assignment_id], map: "idx_assignment_submissions_assignment")
+  @@index([student_id], map: "idx_assignment_submissions_student")
+  @@index([status], map: "idx_assignment_submissions_status")
+  @@index([review_status], map: "idx_assignment_submissions_review_status")
+}
+
+enum SubmissionStatus {
+  SUBMITTED // Submitted within 24 hours
+  LATE // Submitted after 24 hours
+}
+
+enum ReviewStatus {
+  PENDING // Awaiting mentor review
+  VERIFIED // Mentor has reviewed and verified
+}
+
+enum Role {
+  STUDENT
+  MENTOR
+}
+
+model career_nav_ratings {
+  id        String   @id @default(cuid())
+  user_id   String   @db.VarChar(255)
+  user_role Role
+  rating    Int      // 1-5
+  comment   String?  @db.Text
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  users     User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([user_id], map: "idx_career_nav_ratings_user")
+  @@index([user_role], map: "idx_career_nav_ratings_role")
+  @@map("career_nav_ratings")
+}
+
+enum SessionStatus {
+  PENDING // Student sent request, waiting for mentor approval
+  APPROVED // Mentor approved, waiting for payment
+  PAID // Payment successful, waiting to be scheduled
+  SCHEDULED // Session scheduled, chat enabled
+  COMPLETED // Session completed, mentor payout ready
+  REJECTED // Mentor rejected the request
+  CANCELLED // Cancelled by student or mentor
+}
+
+enum PaymentStatus {
+  PENDING // Payment initiated
+  PROCESSING // Payment being processed
+  SUCCESS // Payment successful
+  FAILED // Payment failed
+  REFUNDED // Payment refunded
+}
+
+enum CourseStatus {
+  PAYMENT_PENDING // Payment not yet successful
+  ONGOING // Payment successful, course in progress
+  COMPLETED // All schedule items completed
+}
+
+enum PayoutStatus {
+  PENDING // Waiting for admin to release
+  READY // Ready to be paid (session completed)
+  PROCESSING // Payout being processed
+  RELEASED // Payout completed
+}
+
+enum ScheduleStatus {
+  LOCKED
+  UPCOMING
+  COMPLETED
+}
+
+/// Plans for mentorship sessions
+model plans {
+  id                Int           @id @default(autoincrement())
+  skill_name        String        @db.VarChar(255)
+  plan_key          String        @db.VarChar(50)
+  plan_title        String        @db.VarChar(100)
+  price             Decimal       @db.Decimal(10, 2)
+  duration_weeks    Int
+  sessions_per_week Int
+  description       String?       @db.Text
+  is_active         Boolean       @default(true)
+  created_at        DateTime?     @db.Timestamp(6)
+  updated_at        DateTime?     @db.Timestamp(6)
+  plan_topics       plan_topics[]
+  sessions          sessions[]
+
+  @@unique([skill_name, plan_key], map: "unique_skill_plan")
+  @@index([skill_name], map: "idx_plans_skill")
+  @@index([is_active], map: "idx_plans_active")
+}
+
+/// Topics for each plan session
+model plan_topics {
+  id             Int       @id @default(autoincrement())
+  plan_id        Int
+  week_number    Int
+  session_number Int
+  topic_title    String    @db.VarChar(255)
+  created_at     DateTime? @default(now()) @db.Timestamp(6)
+  plans          plans     @relation(fields: [plan_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([plan_id], map: "idx_plan_topics_plan")
+  @@index([plan_id, week_number, session_number], map: "idx_plan_topics_ordering")
+}
+
+/// Session schedule for mentorship sessions
+model session_schedule {
+  id                Int                 @id @default(autoincrement())
+  session_id        String              @db.VarChar(255)
+  week_number       Int
+  session_number    Int
+  topic_title       String              @db.VarChar(255)
+  scheduled_date    DateTime            @db.Timestamp(6)
+  scheduled_time    String              @db.VarChar(50)
+  status            ScheduleStatus      @default(LOCKED)
+  created_at        DateTime?           @db.Timestamp(6)
+  updated_at        DateTime?           @db.Timestamp(6)
+  sessions          sessions            @relation(fields: [session_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  session_resources session_resources[]
+
+  @@unique([session_id, week_number, session_number], map: "unique_session_schedule_entry")
+  @@index([session_id], map: "idx_session_schedule_session")
+  @@index([session_id, week_number, session_number], map: "idx_session_schedule_ordering")
+  @@index([status], map: "idx_session_schedule_status")
+  @@index([scheduled_date], map: "idx_session_schedule_date")
+}
+
+/// Resources (PDFs) uploaded by mentors for each session schedule item
+model session_resources {
+  id               Int              @id @default(autoincrement())
+  schedule_id      Int // References session_schedule.id
+  file_name        String           @db.VarChar(255)
+  file_url         String           @db.VarChar(500)
+  file_size        Int? // Size in bytes
+  uploaded_by      String           @db.VarChar(255) // mentor_id
+  created_at       DateTime?        @default(now()) @db.Timestamp(6)
+  session_schedule session_schedule @relation(fields: [schedule_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([schedule_id], map: "idx_session_resources_schedule")
+  @@index([uploaded_by], map: "idx_session_resources_mentor")
+}
+
+/// Mentor work experience, internships, projects
+model mentor_experiences {
+  id              Int             @id @default(autoincrement())
+  mentor_id       String          @db.VarChar(255)
+  company         String          @db.VarChar(255)
+  role            String          @db.VarChar(255)
+  domain          String?         @db.VarChar(100)
+  start_date      DateTime?       @db.Date
+  end_date        DateTime?       @db.Date
+  is_current      Boolean?        @default(false)
+  description     String?         @db.Text
+  achievements    String[]
+  created_at      DateTime?       @default(now()) @db.Timestamp(6)
+  updated_at      DateTime?       @default(now()) @db.Timestamp(6)
+  mentor_profiles mentor_profiles @relation(fields: [mentor_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([mentor_id], map: "idx_mentor_experiences_mentor")
+}
+
+/// Mentor skill test results and verification status
+model mentor_tests {
+  id                          Int                           @id @default(autoincrement())
+  mentor_id                   String                        @db.VarChar(255)
+  course_name                 String                        @db.VarChar(255) // e.g., "Data Structures", "Java Programming"
+  course_category             String?                       @db.VarChar(100) // "Programming", "Web", "DSA", etc.
+  score                       Decimal                       @db.Decimal(5, 2) // 0.00 to 100.00
+  status                      TestStatus                    @default(PENDING) // PENDING, PASSED, FAILED, CONDITIONAL
+  test_duration               Int? // Minutes taken
+  total_questions             Int?
+  correct_answers             Int?
+  analysis                    Json? // AI-generated analysis
+  strengths                   String[] // Array of strengths identified
+  weaknesses                  String[] // Array of weaknesses identified
+  feedback                    String?                       @db.Text
+  attempted_at                DateTime?                     @default(now()) @db.Timestamp(6)
+  completed_at                DateTime?                     @db.Timestamp(6)
+  retry_available_after       DateTime?                     @db.Timestamp(6) // For failed tests (7 days cooldown)
+  mentor_profiles             mentor_profiles               @relation(fields: [mentor_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  mentor_course_verifications mentor_course_verifications[]
+
+  @@unique([mentor_id, course_name], map: "unique_mentor_course_test")
+  @@index([mentor_id, status], map: "idx_mentor_tests_status")
+  @@index([mentor_id], map: "idx_mentor_tests_mentor")
+  @@index([course_name], map: "idx_mentor_tests_course")
+}
+
+/// Track which courses mentors are verified to teach (based on passed tests)
+model mentor_course_verifications {
+  id                 Int             @id @default(autoincrement())
+  mentor_id          String          @db.VarChar(255)
+  course_id          Int // References courses.id
+  test_id            Int // References mentor_tests.id (the test that verified this)
+  verified_at        DateTime?       @default(now()) @db.Timestamp(6)
+  verification_score Decimal         @db.Decimal(5, 2) // Score from the test
+  is_active          Boolean?        @default(true)
+  mentor_profiles    mentor_profiles @relation(fields: [mentor_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  courses            courses         @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  mentor_tests       mentor_tests    @relation(fields: [test_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([mentor_id, course_id], map: "unique_mentor_course_verification")
+  @@index([mentor_id, is_active], map: "idx_mentor_verifications_active")
+  @@index([course_id], map: "idx_mentor_verifications_course")
+}
+
+enum TestStatus {
+  PENDING // Test is being prepared
+  IN_PROGRESS // Test is currently being taken
+  PASSED // Score >= 75%
+  CONDITIONAL // Score 60-74% (limited guidance)
+  FAILED // Score < 60%
+}
+
+/// User notifications for session requests, approvals, rejections
+model notifications {
+  id         Int       @id @default(autoincrement())
+  user_id    String    @db.VarChar(255)
+  type       String    @db.VarChar(50) // "session_request", "session_approved", "session_rejected"
+  title      String    @db.VarChar(255)
+  message    String    @db.Text
+  related_id String?   @db.VarChar(255) // session_id, test_id, etc.
+  is_read    Boolean?  @default(false)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  users      User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([user_id, is_read], map: "idx_notifications_user_read")
+  @@index([user_id, created_at(sort: Desc)], map: "idx_notifications_user_time")
+  @@index([type], map: "idx_notifications_type")
+}
