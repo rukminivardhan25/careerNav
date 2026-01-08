@@ -120,7 +120,7 @@ export default function InterviewSession() {
   const [isCompleted, setIsCompleted] = useState(false);
   const [timePerQuestion, setTimePerQuestion] = useState(0); // in seconds
   const [questionStartTime, setQuestionStartTime] = useState<Date | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<number | null>(null);
 
   // Initialize questions and timer
   useEffect(() => {
@@ -141,7 +141,7 @@ export default function InterviewSession() {
   // Timer for current question
   useEffect(() => {
     if (questionStartTime && !isCompleted) {
-      intervalRef.current = setInterval(() => {
+      intervalRef.current = window.setInterval(() => {
         const now = new Date();
         const elapsed = Math.floor((now.getTime() - questionStartTime.getTime()) / 1000);
         setTimePerQuestion(elapsed);

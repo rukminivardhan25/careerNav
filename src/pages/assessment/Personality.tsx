@@ -41,7 +41,7 @@ export default function PersonalityAssessment() {
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [saveFeedback, setSaveFeedback] = useState(false);
   const [assessmentAttemptId, setAssessmentAttemptId] = useState<number | null>(null);
-  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timerIntervalRef = useRef<number | null>(null);
   const autoSubmittedRef = useRef(false);
 
   const totalRanges = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
@@ -233,7 +233,7 @@ export default function PersonalityAssessment() {
       clearInterval(timerIntervalRef.current);
     }
 
-    timerIntervalRef.current = setInterval(() => {
+    timerIntervalRef.current = window.setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
           // Time's up - auto submit
