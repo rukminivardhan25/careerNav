@@ -31,9 +31,35 @@ export async function initializePrisma(): Promise<void> {
         });
         console.log("✅ Prisma migrations completed successfully");
       } catch (migrationError: any) {
-        console.warn("⚠️ Migrate deploy failed (this may be expected if migrations already ran)");
-        console.warn("Error:", migrationError.message);
-        // Continue - migrations might already be applied
+        const errorMessage = migrationError.message || "";
+        
+        // Handle P3009: Failed migrations in database
+        if (errorMessage.includes("P3009") || errorMessage.includes("failed migrations")) {
+          console.warn("⚠️ Found failed migrations (P3009) - attempting to resolve...");
+          try {
+            // Try to resolve the specific failed migration
+            execSync("npx prisma migrate resolve --applied 20250115000000_remove_resume_review_unique_constraint", {
+              stdio: "inherit",
+              cwd: process.cwd(),
+              env: process.env,
+            });
+            console.log("✅ Failed migration resolved, retrying migrate deploy...");
+            
+            // Retry migrate deploy after resolving
+            execSync("npx prisma migrate deploy", {
+              stdio: "inherit",
+              cwd: process.cwd(),
+              env: process.env,
+            });
+            console.log("✅ Prisma migrations completed successfully after resolution");
+          } catch (resolveError: any) {
+            console.error("❌ Failed to resolve migration:", resolveError.message);
+            console.warn("⚠️ Continuing anyway - migrations may need manual resolution");
+          }
+        } else {
+          console.warn("⚠️ Migrate deploy failed (this may be expected if migrations already ran)");
+          console.warn("Error:", errorMessage);
+        }
       }
     }
 
