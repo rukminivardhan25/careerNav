@@ -1,12 +1,21 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
 
 // Base URL without /api (for sockets and file URLs)
-export const BASE_URL = import.meta.env.VITE_API_URL 
-  ? import.meta.env.VITE_API_URL.replace(/\/api$/, "")
+// Filter out invalid URLs like "temp-backend-url"
+const envApiUrl = import.meta.env.VITE_API_URL;
+const isValidUrl = envApiUrl && 
+  !envApiUrl.includes("temp-backend-url") && 
+  !envApiUrl.includes("localhost") &&
+  (envApiUrl.startsWith("http://") || envApiUrl.startsWith("https://"));
+
+export const BASE_URL = isValidUrl
+  ? envApiUrl.replace(/\/api$/, "")
   : "https://career-nav-backend.onrender.com";
 
 // API base URL with /api (for all API calls)
-export const API_BASE_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+export const API_BASE_URL = isValidUrl 
+  ? (envApiUrl.endsWith("/api") ? envApiUrl : `${envApiUrl}/api`)
+  : "https://career-nav-backend.onrender.com/api";
 
 class ApiClient {
   private client: AxiosInstance;
