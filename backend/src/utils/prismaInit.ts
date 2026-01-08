@@ -31,13 +31,22 @@ export async function initializePrisma(): Promise<void> {
         });
         console.log("✅ Prisma migrations completed successfully");
       } catch (migrationError: any) {
-        const errorMessage = migrationError.message || "";
+        const errorMessage = String(migrationError.message || migrationError.stderr || migrationError.stdout || "");
+        const fullError = String(migrationError);
         
         // Handle P3009: Failed migrations in database
-        if (errorMessage.includes("P3009") || errorMessage.includes("failed migrations")) {
+        if (
+          errorMessage.includes("P3009") || 
+          errorMessage.includes("failed migrations") ||
+          errorMessage.includes("migrate found failed migrations") ||
+          fullError.includes("P3009")
+        ) {
           console.warn("⚠️ Found failed migrations (P3009) - attempting to resolve...");
+          console.warn("Error details:", errorMessage.substring(0, 500));
+          
           try {
             // Try to resolve the specific failed migration
+            console.log("🔧 Resolving failed migration: 20250115000000_remove_resume_review_unique_constraint");
             execSync("npx prisma migrate resolve --applied 20250115000000_remove_resume_review_unique_constraint", {
               stdio: "inherit",
               cwd: process.cwd(),
@@ -53,12 +62,34 @@ export async function initializePrisma(): Promise<void> {
             });
             console.log("✅ Prisma migrations completed successfully after resolution");
           } catch (resolveError: any) {
-            console.error("❌ Failed to resolve migration:", resolveError.message);
-            console.warn("⚠️ Continuing anyway - migrations may need manual resolution");
+            const resolveErrorMsg = String(resolveError.message || resolveError.stderr || "");
+            console.error("❌ Failed to resolve migration:", resolveErrorMsg.substring(0, 500));
+            
+            // If resolve also fails, try to mark it as rolled back instead
+            try {
+              console.log("🔄 Attempting alternative: marking migration as rolled back...");
+              execSync("npx prisma migrate resolve --rolled-back 20250115000000_remove_resume_review_unique_constraint", {
+                stdio: "inherit",
+                cwd: process.cwd(),
+                env: process.env,
+              });
+              console.log("✅ Migration marked as rolled back, retrying...");
+              
+              execSync("npx prisma migrate deploy", {
+                stdio: "inherit",
+                cwd: process.cwd(),
+                env: process.env,
+              });
+              console.log("✅ Prisma migrations completed after rollback resolution");
+            } catch (rollbackError: any) {
+              console.error("❌ All resolution attempts failed");
+              console.warn("⚠️ Continuing anyway - migrations may need manual resolution");
+              console.warn("⚠️ Server will start but some features may not work");
+            }
           }
         } else {
           console.warn("⚠️ Migrate deploy failed (this may be expected if migrations already ran)");
-          console.warn("Error:", errorMessage);
+          console.warn("Error:", errorMessage.substring(0, 500));
         }
       }
     }
