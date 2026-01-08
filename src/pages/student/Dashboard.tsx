@@ -189,9 +189,9 @@ export default function StudentDashboard() {
 
   return (
     <DashboardLayout role="student" title="Dashboard">
-      <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-4 sm:space-y-6 w-full max-w-full box-border">
         {/* 1. Welcome Section */}
-        <div className="glass-card rounded-xl p-4 sm:p-6 lg:p-8 relative overflow-hidden">
+        <div className="glass-card rounded-xl p-4 sm:p-6 lg:p-8 relative overflow-hidden w-full max-w-full box-border">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5" />
           <div className="relative">
             <h1 className="text-lg sm:text-headline text-foreground mb-1 break-words">
@@ -204,7 +204,7 @@ export default function StudentDashboard() {
         </div>
 
         {/* 2. Top Action Row - Two Cards Side by Side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-full box-border">
           {/* Left Card: Take Assessment */}
           <div className="glass-card rounded-xl p-4 sm:p-5 hover:shadow-card-hover transition-all duration-300 relative overflow-hidden w-full max-w-full">
             <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5" />
@@ -283,7 +283,7 @@ export default function StudentDashboard() {
         </div>
 
         {/* 3. Middle Section: 4 Stat Cards - All values computed from database */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full max-w-full box-border">
           <StatCard
             title="Career Score"
             value={`${metrics.careerScore.value}%`}

@@ -556,9 +556,9 @@ export default function MentorDashboard() {
 
   return (
     <DashboardLayout role="mentor" title="Dashboard">
-      <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+      <div className="space-y-4 sm:space-y-6 lg:space-y-8 w-full max-w-full box-border">
         {/* Welcome section */}
-        <div className="glass-card rounded-xl p-4 sm:p-6 lg:p-8 relative overflow-hidden w-full max-w-full">
+        <div className="glass-card rounded-xl p-4 sm:p-6 lg:p-8 relative overflow-hidden w-full max-w-full box-border">
           <div className="absolute inset-0 bg-gradient-to-r from-secondary/5 to-primary/5" />
           <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="min-w-0 flex-1">
@@ -590,7 +590,7 @@ export default function MentorDashboard() {
         </div>
 
         {/* Stats grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 w-full max-w-full box-border">
           <StatCard
             title="Pending Requests"
             value={safeToString(stats.pendingRequests, "0")}
@@ -659,9 +659,9 @@ export default function MentorDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 w-full max-w-full box-border">
           {/* Students Requesting Sessions */}
-          <div className="lg:col-span-2 space-y-3 sm:space-y-4">
+          <div className="lg:col-span-2 space-y-3 sm:space-y-4 w-full max-w-full box-border min-w-0">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
               <h2 className="text-base sm:text-title text-foreground break-words">
                 Students Requesting Sessions
@@ -672,7 +672,7 @@ export default function MentorDashboard() {
             </div>
 
             {normalizeArray(pendingRequests, []).length === 0 ? (
-              <div className="glass-card rounded-xl p-12 text-center">
+              <div className="glass-card rounded-xl p-12 text-center w-full max-w-full box-border">
                 <Users className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
                 <p className="text-body text-foreground">No session requests</p>
                 <p className="text-body-sm text-muted-foreground mt-2">
@@ -680,7 +680,7 @@ export default function MentorDashboard() {
                 </p>
               </div>
             ) : (
-              <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+              <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 w-full max-w-full box-border">
                 {normalizeArray(pendingRequests, []).map((request, index) => {
                   const requestId = request?.id || `request-${index}`;
                   const student = request?.student || {};
@@ -796,7 +796,7 @@ export default function MentorDashboard() {
           </div>
 
           {/* Right sidebar - Scheduled Sessions */}
-          <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-4 sm:space-y-6 w-full max-w-full box-border min-w-0">
             <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center justify-between gap-2">
                 <h2 className="text-base sm:text-title text-foreground break-words">Scheduled Sessions</h2>
@@ -805,14 +805,14 @@ export default function MentorDashboard() {
                 </Badge>
               </div>
               {normalizeArray(scheduledSessions, []).length === 0 ? (
-                <div className="glass-card rounded-xl p-8 text-center">
+                <div className="glass-card rounded-xl p-8 text-center w-full max-w-full box-border">
                   <Calendar className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
                   <p className="text-body-sm text-muted-foreground">
                     No scheduled sessions
                   </p>
                 </div>
               ) : (
-                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
+                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 w-full max-w-full box-border">
                   {normalizeArray(scheduledSessions, []).map((session, index) => {
                     const sessionId = session?.id || `session-${index}`;
                     const student = session?.student || {};

@@ -12,7 +12,7 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children, role, title }: DashboardLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
@@ -58,11 +58,11 @@ export function DashboardLayout({ children, role, title }: DashboardLayoutProps)
       </div>
 
       {/* Main content */}
-      <div className="lg:pl-64">
+      <div className="lg:pl-64 w-full max-w-full overflow-x-hidden">
         {/* Top bar */}
-        <header className="sticky top-0 z-20 h-16 bg-background/80 backdrop-blur-lg border-b border-border">
-          <div className="flex items-center justify-between h-full px-3 sm:px-4 md:px-6 lg:px-8">
-            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+        <header className="sticky top-0 z-20 h-16 bg-background/80 backdrop-blur-lg border-b border-border w-full max-w-full">
+          <div className="flex items-center justify-between h-full px-3 sm:px-4 md:px-6 lg:px-8 max-w-full">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
               <Button
                 variant="ghost"
                 size="icon"
@@ -96,8 +96,10 @@ export function DashboardLayout({ children, role, title }: DashboardLayoutProps)
         </header>
 
         {/* Page content */}
-        <main id="main-content" className="p-3 sm:p-4 md:p-6 lg:p-8">
-          {children}
+        <main id="main-content" className="p-3 sm:p-4 md:p-6 lg:p-8 w-full max-w-full box-border overflow-x-hidden">
+          <div className="w-full max-w-full box-border">
+            {children}
+          </div>
         </main>
       </div>
     </div>
