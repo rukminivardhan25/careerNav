@@ -34,34 +34,37 @@ export function DashboardLayout({ children, role, title }: DashboardLayoutProps)
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Sidebar */}
-      <div className="hidden lg:block">
-        <DashboardSidebar role={role} />
-      </div>
-
-      {/* Mobile sidebar backdrop */}
-      {sidebarOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-background/80 backdrop-blur-sm z-30"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Mobile sidebar */}
-      <div
-        className={cn(
-          "lg:hidden fixed inset-y-0 left-0 z-40 transition-transform duration-300",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+      {/* Mobile sidebar overlay - does NOT affect layout */}
+      <div className="lg:hidden">
+        {/* Mobile sidebar backdrop */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30"
+            onClick={() => setSidebarOpen(false)}
+          />
         )}
-      >
+
+        {/* Mobile sidebar - fixed overlay, hidden when closed */}
+        <div
+          className={cn(
+            "fixed inset-y-0 left-0 z-40 transition-transform duration-300",
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          )}
+        >
+          <DashboardSidebar role={role} />
+        </div>
+      </div>
+
+      {/* Desktop sidebar - fixed position, does not affect layout flow */}
+      <div className="hidden lg:block fixed inset-y-0 left-0 w-64 z-40">
         <DashboardSidebar role={role} />
       </div>
 
-      {/* Main content */}
-      <div className="lg:pl-64 w-full max-w-full overflow-x-hidden">
+      {/* Main content - full width on mobile, padded on desktop ONLY */}
+      <div className="w-full lg:pl-64">
         {/* Top bar */}
-        <header className="sticky top-0 z-20 h-16 bg-background/80 backdrop-blur-lg border-b border-border w-full max-w-full">
-          <div className="flex items-center justify-between h-full px-3 sm:px-4 md:px-6 lg:px-8 max-w-full">
+        <header className="sticky top-0 z-20 h-16 bg-background/80 backdrop-blur-lg border-b border-border">
+          <div className="flex items-center justify-between h-full px-3 sm:px-4 md:px-6 lg:px-8">
             <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
               <Button
                 variant="ghost"
@@ -96,10 +99,8 @@ export function DashboardLayout({ children, role, title }: DashboardLayoutProps)
         </header>
 
         {/* Page content */}
-        <main id="main-content" className="p-3 sm:p-4 md:p-6 lg:p-8 w-full max-w-full box-border overflow-x-hidden">
-          <div className="w-full max-w-full box-border">
-            {children}
-          </div>
+        <main id="main-content" className="p-3 sm:p-4 md:p-6 lg:p-8">
+          {children}
         </main>
       </div>
     </div>
