@@ -22,11 +22,6 @@ export const env = {
   // Session
   SESSION_SECRET: process.env.SESSION_SECRET || "",
   
-  // Google OAuth
-  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || "",
-  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || "",
-  GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:5000/api/auth/google/callback",
-  
   // AI Services
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || "",
   GROQ_API_KEY: process.env.GROQ_API_KEY || "",

@@ -146,6 +146,3 @@ class ApiClient {
 
 export const apiClient = new ApiClient();
 
-// Note: Google authentication is handled by Firebase in the frontend
-// See StudentLogin.tsx for the authentication flow
-

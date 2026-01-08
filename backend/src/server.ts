@@ -24,7 +24,6 @@ startSessionStatusCron();
 httpServer.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📝 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔐 OAuth endpoint: http://localhost:${PORT}/api/auth/google`);
   console.log(`📊 Environment: ${env.NODE_ENV}`);
   console.log(`🔌 Socket.IO initialized`);
   console.log(`⏰ Session status cron job started`);

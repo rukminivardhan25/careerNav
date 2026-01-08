@@ -5,7 +5,6 @@
 import express from "express";
 import cors from "cors";
 import session from "express-session";
-import passport from "./config/passport";
 import { env } from "./config/env";
 import { errorHandler, notFoundHandler } from "./middlewares/error.middleware";
 import path from "path";
@@ -57,10 +56,6 @@ app.use(
     },
   })
 );
-
-// Initialize Passport
-app.use(passport.initialize());
-app.use(passport.session());
 
 // Serve uploaded files statically
 app.use("/api/uploads", express.static(path.join(process.cwd(), "uploads")));

@@ -1,7 +1,6 @@
 /**
  * Auth Controller
  * Handles HTTP requests for authentication
- * Note: Most auth logic is in routes/auth.ts for OAuth flow
  * This controller can be used for additional auth operations
  */
 import { Request, Response } from "express";

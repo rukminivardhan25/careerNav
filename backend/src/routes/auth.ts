@@ -1,5 +1,4 @@
 import express, { Request, Response } from "express";
-import passport from "passport";
 import { Role } from "@prisma/client";
 import { generateToken } from "../utils/jwt";
 import { PrismaClient } from "@prisma/client";
@@ -33,122 +32,6 @@ router.get("/test-db", async (req: Request, res: Response) => {
     });
   }
 });
-
-// Temporary storage for OAuth state (role and callback)
-// In production, use Redis or proper session storage
-const oauthStateStore = new Map<string, { role: Role; callback: string }>();
-
-/**
- * GET /api/auth/google
- * OAuth entry endpoint
- * Query params: role (student|mentor), callback (frontend callback URL)
- */
-router.get("/google", (req: Request, res: Response) => {
-  const { role, callback } = req.query;
-
-  // Validate role
-  if (!role || (role !== "student" && role !== "mentor")) {
-    return res.status(400).json({
-      error: "Invalid role. Must be 'student' or 'mentor'",
-    });
-  }
-
-  // Validate callback URL
-  if (!callback || typeof callback !== "string") {
-    return res.status(400).json({
-      error: "Callback URL is required",
-    });
-  }
-
-  // Generate state token for OAuth flow
-  const stateToken = Math.random().toString(36).substring(7);
-  
-  // Store role and callback temporarily
-  oauthStateStore.set(stateToken, {
-    role: role === "student" ? Role.STUDENT : Role.MENTOR,
-    callback: callback as string,
-  });
-
-  // Store in global for passport strategy access
-  (global as any).oauthStateToken = stateToken;
-
-  // Store in session for passport callback
-  (req.session as any).oauthState = {
-    role: role === "student" ? Role.STUDENT : Role.MENTOR,
-    callback: callback as string,
-  };
-
-  // Redirect to Google OAuth
-  passport.authenticate("google", {
-    scope: ["profile", "email"],
-    state: stateToken,
-  })(req, res);
-});
-
-/**
- * GET /api/auth/google/callback
- * Google OAuth callback endpoint
- */
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { session: false }),
-  async (req: Request, res: Response) => {
-    try {
-      const user = (req as any).user; // User from passport
-      const state = req.query.state as string;
-      
-      // Get OAuth state (role and callback) from store or session
-      const oauthState = oauthStateStore.get(state) || (req.session as any)?.oauthState;
-
-      if (!oauthState) {
-        const defaultCallback = "http://localhost:5173/auth/callback";
-        return res.redirect(`${defaultCallback}?error=Invalid OAuth state`);
-      }
-
-      const { role, callback } = oauthState;
-
-      // Ensure user has the correct role (update if needed)
-      let updatedUser = user;
-      if (user.role !== role) {
-        updatedUser = await prisma.user.update({
-          where: { id: user.id },
-          data: { role },
-        });
-      }
-
-      // Generate JWT token
-      const token = generateToken({
-        userId: updatedUser.id,
-        email: updatedUser.email,
-        role: updatedUser.role,
-      });
-
-      // Prepare user data for frontend
-      const userData = {
-        id: updatedUser.id,
-        email: updatedUser.email,
-        name: updatedUser.name,
-        role: updatedUser.role,
-      };
-
-      // Clean up state
-      oauthStateStore.delete(state);
-      delete (req.session as any)?.oauthState;
-
-      // Encode user data for URL
-      const encodedUser = encodeURIComponent(JSON.stringify(userData));
-
-      // Redirect to frontend callback URL
-      const redirectUrl = `${callback}?token=${token}&user=${encodedUser}`;
-      res.redirect(redirectUrl);
-    } catch (error) {
-      console.error("OAuth callback error:", error);
-      const oauthState = (req.session as any)?.oauthState;
-      const callback = oauthState?.callback || "http://localhost:5173/auth/callback";
-      res.redirect(`${callback}?error=Authentication failed`);
-    }
-  }
-);
 
 /**
  * POST /api/auth/signup
@@ -311,13 +194,13 @@ router.post("/login", async (req: Request, res: Response) => {
 
     console.log("[Login] User found:", user.id, "Role:", user.role);
 
-    // Check if user has a password (not OAuth-only user)
+    // Check if user has a password
     if (!user.password) {
-      console.log("[Login] User has no password (OAuth-only account)");
+      console.log("[Login] User has no password");
       return res.status(401).json({
         error: "Invalid credentials",
-        message: "This account was created with Google. Please sign in with Google.",
-        code: "OAUTH_ONLY_ACCOUNT",
+        message: "Account does not have a password set. Please contact support.",
+        code: "NO_PASSWORD",
       });
     }
 
