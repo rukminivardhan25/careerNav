@@ -140,3 +140,4 @@ export function inferCourseCategory(skillName: string): string {
 
 
 
+

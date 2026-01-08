@@ -51,6 +51,7 @@ interface SessionData {
   status: string;
   scheduledAt: string | null;
   createdAt: string | null;
+  zoomLink?: string | null;
 }
 
 interface Message {
