@@ -50,8 +50,9 @@ import { exportResumeToPDF } from "@/utils/pdfExport";
 import { getAuthToken, getCurrentUser } from "@/lib/auth";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { API_BASE_URL } from "@/lib/api";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+const API_URL = API_BASE_URL;
 
 const defaultResumeData: ResumeData = {
   header: {

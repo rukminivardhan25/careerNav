@@ -16,6 +16,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/api";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -106,7 +107,7 @@ export default function Students() {
     setError(null);
     try {
       const token = localStorage.getItem("authToken");
-      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+      const apiUrl = API_BASE_URL;
 
       // Fetch all three types of sessions in parallel
       const [paymentPendingRes, ongoingRes, completedRes] = await Promise.all([
@@ -162,7 +163,7 @@ export default function Students() {
     setCancelling(true);
     try {
       const token = localStorage.getItem("authToken");
-      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+      const apiUrl = API_BASE_URL;
 
       const response = await fetch(`${apiUrl}/mentors/sessions/${cancelSessionId}/cancel`, {
         method: "POST",

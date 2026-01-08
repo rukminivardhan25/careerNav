@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Brain, User, CheckCircle, ArrowRight } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/lib/api";
 
 interface TestCompletionState {
   aptitude: boolean;
@@ -74,7 +75,7 @@ export default function Assessment() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile/check`,
+        `${API_BASE_URL}/profile/check`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -93,7 +94,7 @@ export default function Assessment() {
         // Try to fetch profile directly
         try {
           const profileResponse = await fetch(
-            `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile`,
+            `${API_BASE_URL}/profile`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -190,7 +191,7 @@ export default function Assessment() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/assessments/generate-report`,
+        `${API_BASE_URL}/assessments/generate-report`,
         {
           method: "POST",
           headers: {

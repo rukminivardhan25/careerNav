@@ -11,8 +11,9 @@ import {
 import { getAuthToken } from "@/lib/auth";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { API_BASE_URL } from "@/lib/api";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+const API_URL = API_BASE_URL;
 
 interface Notification {
   id: number;

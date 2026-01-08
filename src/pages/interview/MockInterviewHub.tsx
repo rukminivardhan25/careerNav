@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAuthToken } from "@/lib/auth";
+import { API_BASE_URL } from "@/lib/api";
 
 interface InterviewOption {
   id: string;
@@ -102,7 +103,7 @@ export default function MockInterviewHub() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+      const apiUrl = API_BASE_URL;
 
       // Generate initial interviews
       const response = await fetch(`${apiUrl}/interviews/generate`, {
@@ -138,7 +139,7 @@ export default function MockInterviewHub() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+      const apiUrl = API_BASE_URL;
 
       const filters: any = {};
       if (skillFilter !== "all") filters.skill = skillFilter;

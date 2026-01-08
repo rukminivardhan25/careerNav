@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Brain, Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function StudentSignUp() {
   const [name, setName] = useState("");
@@ -41,7 +42,7 @@ export default function StudentSignUp() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/auth/signup`,
+        `${API_BASE_URL}/auth/signup`,
         {
           method: "POST",
           headers: {

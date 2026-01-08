@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/api";
 import {
   Target,
   FileText,
@@ -105,7 +106,7 @@ export default function StudentDashboard() {
 
       // Fetch dashboard data
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/dashboard`,
+        `${API_BASE_URL}/dashboard`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -155,7 +156,7 @@ export default function StudentDashboard() {
 
       // Fetch computed dashboard metrics
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/dashboard/metrics`,
+        `${API_BASE_URL}/dashboard/metrics`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -419,7 +420,7 @@ export default function StudentDashboard() {
                       return;
                     }
                     const response = await fetch(
-                      `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/ratings/careernav`,
+                      `${API_BASE_URL}/ratings/careernav`,
                       {
                         method: "POST",
                         headers: {

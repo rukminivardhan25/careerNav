@@ -28,8 +28,9 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { getCurrentUser, getAuthToken } from "@/lib/auth";
+import { API_BASE_URL, BASE_URL } from "@/lib/api";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+const API_URL = API_BASE_URL;
 
 // Helper function to get first letter of first name
 const getInitials = (name: string): string => {
@@ -127,9 +128,7 @@ export default function MentorProfile() {
             let fullUrl = photoUrl;
             if (!photoUrl.startsWith("http")) {
               // photoUrl from backend is like "/api/uploads/profiles/..."
-              // API_URL is like "https://career-nav-backend.onrender.com/api"
-              const base = API_URL.replace("/api", ""); // "https://career-nav-backend.onrender.com"
-              fullUrl = `${base}${photoUrl}`; // "https://career-nav-backend.onrender.com/api/uploads/..."
+              fullUrl = `${BASE_URL}${photoUrl}`; // "https://career-nav-backend.onrender.com/api/uploads/..."
             }
             // Add cache-busting to ensure fresh image
             fullUrl = `${fullUrl}?t=${Date.now()}`;
@@ -273,10 +272,8 @@ export default function MentorProfile() {
           let fullUrl = photoUrl;
           if (!photoUrl.startsWith("http")) {
             // photoUrl from backend is like "/api/uploads/profiles/..."
-            // API_URL is like "https://career-nav-backend.onrender.com/api"
             // We need: "https://career-nav-backend.onrender.com/api/uploads/profiles/..."
-            const base = API_URL.replace("/api", ""); // "https://career-nav-backend.onrender.com"
-            fullUrl = `${base}${photoUrl}`; // "https://career-nav-backend.onrender.com/api/uploads/..."
+            fullUrl = `${BASE_URL}${photoUrl}`; // "https://career-nav-backend.onrender.com/api/uploads/..."
           }
           
           // Add cache-busting query param to force image reload

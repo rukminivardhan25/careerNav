@@ -4,8 +4,7 @@
  */
 import { io, Socket } from "socket.io-client";
 import { getAuthToken } from "./auth";
-
-const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com";
+import { BASE_URL } from "./api";
 
 // Module-level singleton - ensures only ONE socket instance
 // This persists across React StrictMode remounts and hot reloads
@@ -32,7 +31,7 @@ export function getSocket(): Socket | null {
   // This will only execute once per browser tab, even with React StrictMode
   console.log("[Socket] Creating singleton socket instance (this should only happen once)");
   
-  socket = io(API_URL, {
+  socket = io(BASE_URL, {
     auth: {
       token: token,
     },

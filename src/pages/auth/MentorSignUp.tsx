@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Brain, Mail, Lock, User, ArrowRight, Eye, EyeOff, Users } from "lucide-react";
 import { toast } from "sonner";
 import { setAuthData } from "@/lib/auth";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function MentorSignUp() {
   const [name, setName] = useState("");
@@ -45,7 +46,7 @@ export default function MentorSignUp() {
       const normalizedEmail = email.toLowerCase().trim();
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/auth/signup`,
+        `${API_BASE_URL}/auth/signup`,
         {
           method: "POST",
           headers: {

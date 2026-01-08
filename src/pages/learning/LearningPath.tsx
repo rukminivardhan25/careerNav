@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/lib/api";
 
 interface Skill {
   id: string;
@@ -59,7 +60,7 @@ export default function LearningPath() {
 
       // Fetch learning path from backend (it will use selected career)
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/learning-paths/my`,
+        `${API_BASE_URL}/learning-paths/my`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

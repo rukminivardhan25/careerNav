@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useState, useEffect } from "react";
 import { clearAuthData, getCurrentUser } from "@/lib/auth";
+import { API_BASE_URL, BASE_URL } from "@/lib/api";
 
 interface SidebarProps {
   role: "student" | "mentor";
@@ -82,10 +83,9 @@ export function DashboardSidebar({ role }: SidebarProps) {
         setProfilePhoto(null);
       } else if (event.detail?.photoUrl) {
         const photoUrl = event.detail.photoUrl;
-        const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
         const fullUrl = photoUrl.startsWith("http")
           ? photoUrl
-          : `${API_URL.replace("/api", "")}${photoUrl}`;
+          : `${BASE_URL}${photoUrl}`;
         setProfilePhoto(fullUrl);
       }
     };
@@ -101,8 +101,7 @@ export function DashboardSidebar({ role }: SidebarProps) {
       const token = localStorage.getItem("authToken");
       if (!token) return;
 
-      const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
-      const response = await fetch(`${API_URL}/mentors/profile`, {
+      const response = await fetch(`${API_BASE_URL}/mentors/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -113,10 +112,9 @@ export function DashboardSidebar({ role }: SidebarProps) {
         if (data.profile?.basicInfo?.photoUrl) {
           const photoUrl = data.profile.basicInfo.photoUrl;
           // Construct full URL if it's a relative path
-          const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
           const baseUrl = photoUrl.startsWith("http") 
             ? photoUrl 
-            : `${API_URL.replace("/api", "")}${photoUrl}`;
+            : `${BASE_URL}${photoUrl}`;
           // Add cache-busting to ensure fresh image
           const fullUrl = `${baseUrl}?t=${Date.now()}`;
           setProfilePhoto(fullUrl);
@@ -134,8 +132,7 @@ export function DashboardSidebar({ role }: SidebarProps) {
       const token = localStorage.getItem("authToken");
       if (!token) return;
 
-      const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
-      const response = await fetch(`${API_URL}/profile`, {
+      const response = await fetch(`${API_BASE_URL}/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -148,7 +145,7 @@ export function DashboardSidebar({ role }: SidebarProps) {
           const photoUrl = profile.profile_photo_url;
           const baseUrl = photoUrl.startsWith("http")
             ? photoUrl
-            : `${API_URL.replace("/api", "")}${photoUrl}`;
+            : `${BASE_URL}${photoUrl}`;
           const fullUrl = `${baseUrl}?t=${Date.now()}`;
           setProfilePhoto(fullUrl);
         } else {

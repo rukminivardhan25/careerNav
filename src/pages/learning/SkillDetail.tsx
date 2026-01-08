@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/lib/api";
 
 interface SkillDetail {
   id: string;
@@ -64,7 +65,7 @@ export default function SkillDetail() {
 
       // Fetch skill detail from backend
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/learning-paths/skill/${skillId}`,
+        `${API_BASE_URL}/learning-paths/skill/${skillId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -148,7 +149,7 @@ export default function SkillDetail() {
 
       // Mark skill as completed
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/learning-paths/skill/${skillId}/complete`,
+        `${API_BASE_URL}/learning-paths/skill/${skillId}/complete`,
         {
           method: "POST",
           headers: {

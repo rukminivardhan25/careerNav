@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { API_BASE_URL } from "@/lib/api";
 
 interface ProfileGuardProps {
   children: React.ReactNode;
@@ -28,7 +29,7 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile/check`,
+        `${API_BASE_URL}/profile/check`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Loader2, AlertCircle, CreditCard, Eye, Trash2, X, Check, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/api";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -147,7 +148,7 @@ export default function SessionsList() {
       const token = localStorage.getItem("authToken");
       if (!token) return;
 
-      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+      const apiUrl = API_BASE_URL;
       const response = await fetch(`${apiUrl}/students/dashboard/summary`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -191,7 +192,7 @@ export default function SessionsList() {
         throw new Error("Authentication token not found");
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+      const apiUrl = API_BASE_URL;
       const response = await fetch(`${apiUrl}/students/sessions`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -246,7 +247,7 @@ export default function SessionsList() {
         throw new Error("Authentication token not found");
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+      const apiUrl = API_BASE_URL;
       const response = await fetch(`${apiUrl}/sessions/${sessionToPay.sessionId}/mock-payment`, {
         method: "POST",
         headers: {
@@ -284,7 +285,7 @@ export default function SessionsList() {
         throw new Error("Authentication token not found");
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+      const apiUrl = API_BASE_URL;
       const response = await fetch(`${apiUrl}/sessions/${sessionId}/cancel`, {
         method: "POST",
         headers: {
@@ -318,7 +319,7 @@ export default function SessionsList() {
         throw new Error("Authentication token not found");
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+      const apiUrl = API_BASE_URL;
       const response = await fetch(`${apiUrl}/sessions/${sessionId}`, {
         method: "DELETE",
         headers: {

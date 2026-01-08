@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/lib/api";
 import {
   Collapsible,
   CollapsibleContent,
@@ -57,7 +58,7 @@ export default function CareerReport() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/assessments/report/${reportId || "latest"}`,
+        `${API_BASE_URL}/assessments/report/${reportId || "latest"}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -137,7 +138,7 @@ export default function CareerReport() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/careers/select-and-generate-path`,
+        `${API_BASE_URL}/careers/select-and-generate-path`,
         {
           method: "POST",
           headers: {

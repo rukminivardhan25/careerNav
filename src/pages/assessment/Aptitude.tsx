@@ -16,6 +16,7 @@ import {
 import { ArrowLeft, ArrowRight, Clock, CheckCircle } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/lib/api";
 
 const TOTAL_QUESTIONS = 50;
 const QUESTIONS_PER_PAGE = 10;
@@ -130,7 +131,7 @@ export default function AptitudeAssessment() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/assessments/start?type=aptitude`,
+        `${API_BASE_URL}/assessments/start?type=aptitude`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -335,7 +336,7 @@ export default function AptitudeAssessment() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/assessments/submit`,
+        `${API_BASE_URL}/assessments/submit`,
         {
           method: "POST",
           headers: {

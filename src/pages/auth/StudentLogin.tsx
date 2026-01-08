@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Brain, Mail, Lock, ArrowRight, Eye, EyeOff, Sun, Moon } from "lucide-react";
 import { toast } from "sonner";
 import { setAuthData } from "@/lib/auth";
+import { API_BASE_URL } from "@/lib/api";
 
 // Static fallback review
 const FALLBACK_REVIEW = {
@@ -39,7 +40,7 @@ export default function StudentLogin() {
     const fetchReview = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/public/random-review?role=STUDENT`
+          `${API_BASE_URL}/public/random-review?role=STUDENT`
         );
         const data = await response.json();
         
@@ -75,7 +76,7 @@ export default function StudentLogin() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/auth/login`,
+        `${API_BASE_URL}/auth/login`,
         {
           method: "POST",
           headers: {
@@ -153,7 +154,7 @@ export default function StudentLogin() {
         // Check if profile is completed
         try {
           const profileCheckResponse = await fetch(
-            `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile/check`,
+            `${API_BASE_URL}/profile/check`,
             {
               headers: {
                 Authorization: `Bearer ${accessToken}`,

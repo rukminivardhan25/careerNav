@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Brain, Mail, Lock, ArrowRight, Eye, EyeOff, Users, Sun, Moon } from "lucide-react";
 import { toast } from "sonner";
 import { setAuthData } from "@/lib/auth";
+import { API_BASE_URL } from "@/lib/api";
 
 // Static fallback review
 const FALLBACK_REVIEW = {
@@ -39,7 +40,7 @@ export default function MentorLogin() {
     const fetchReview = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/public/random-review?role=MENTOR`
+          `${API_BASE_URL}/public/random-review?role=MENTOR`
         );
         const data = await response.json();
         
@@ -78,7 +79,7 @@ export default function MentorLogin() {
       const normalizedEmail = email.toLowerCase().trim();
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/auth/login`,
+        `${API_BASE_URL}/auth/login`,
         {
           method: "POST",
           headers: {
@@ -156,7 +157,7 @@ export default function MentorLogin() {
         // Check if profile is completed
         try {
           const profileCheckResponse = await fetch(
-            `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile/check`,
+            `${API_BASE_URL}/profile/check`,
             {
               headers: {
                 Authorization: `Bearer ${accessToken}`,

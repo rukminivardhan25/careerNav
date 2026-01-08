@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { GraduationCap, Save, Loader2, Mail, User, Linkedin, Github, Globe, Twitter } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { getCurrentUser, clearAuthData } from "@/lib/auth";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function EducationForm() {
   const navigate = useNavigate();
@@ -125,7 +126,7 @@ export default function EducationForm() {
       });
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile`,
+        `${API_BASE_URL}/profile`,
         {
           method: "POST",
           headers: {

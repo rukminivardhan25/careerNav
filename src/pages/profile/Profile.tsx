@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { getCurrentUser, getAuthToken } from "@/lib/auth";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ export default function Profile() {
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [profileBadges, setProfileBadges] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+  const API_URL = API_BASE_URL;
   const [formData, setFormData] = useState({
     school_or_college: "",
     education_type: "",
@@ -76,7 +77,7 @@ export default function Profile() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile`,
+        `${API_BASE_URL}/profile`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -334,7 +335,7 @@ export default function Profile() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile`,
+        `${API_BASE_URL}/profile`,
         {
           method: "POST",
           headers: {

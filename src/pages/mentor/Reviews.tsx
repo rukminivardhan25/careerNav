@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getAuthToken } from "@/lib/auth";
+import { API_BASE_URL } from "@/lib/api";
 import {
   Dialog,
   DialogContent,
@@ -77,7 +78,7 @@ export default function Reviews() {
           return;
         }
 
-        const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+        const apiUrl = API_BASE_URL;
         const params = new URLSearchParams();
         if (statusFilter !== "all") params.append("status", statusFilter);
         if (typeFilter !== "all") params.append("type", typeFilter);
@@ -129,7 +130,7 @@ export default function Reviews() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+      const apiUrl = API_BASE_URL;
       const response = await fetch(`${apiUrl}/mentors/reviews/${selectedReview.id}/complete`, {
         method: "POST",
         headers: {
@@ -180,7 +181,7 @@ export default function Reviews() {
   // Handle view review
   const handleViewReview = async (review: Review) => {
     if (review.fileUrl) {
-      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+      const apiUrl = API_BASE_URL;
       const fullURL = review.fileUrl.startsWith("http") ? review.fileUrl : `${apiUrl}${review.fileUrl}`;
       window.open(fullURL, "_blank");
     } else if (review.type === "Resume Review" && (review as any).resumeId) {
@@ -189,7 +190,7 @@ export default function Reviews() {
         const token = getAuthToken();
         if (!token) return;
         
-        const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+        const apiUrl = API_BASE_URL;
         const response = await fetch(`${apiUrl}/resumes/${(review as any).resumeId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -224,7 +225,7 @@ export default function Reviews() {
         const token = getAuthToken();
         if (!token) return;
         
-        const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+        const apiUrl = API_BASE_URL;
         const response = await fetch(`${apiUrl}/cover-letters/${(review as any).coverLetterId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });

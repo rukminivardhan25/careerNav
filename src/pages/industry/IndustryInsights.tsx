@@ -3,6 +3,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Calendar, TrendingUp, Briefcase, Lightbulb, DollarSign, Building2, Zap } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { API_BASE_URL } from "@/lib/api";
 
 interface IndustryInsights {
   branch: string;
@@ -62,7 +63,7 @@ export default function IndustryInsights() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/industry/insights`,
+        `${API_BASE_URL}/industry/insights`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -27,6 +27,7 @@ import {
 import { useNavigate, Link } from "react-router-dom";
 import { getCurrentUser, getAuthToken } from "@/lib/auth";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/api";
 
 // ============================================
 // DATA NORMALIZATION UTILITIES (CRASH-PROOF)
@@ -323,7 +324,7 @@ export default function MentorDashboard() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+      const apiUrl = API_BASE_URL;
 
       // Fetch all data in parallel with error handling
       const [statsRes, pendingRes, scheduledRes, coursesRes] = await Promise.all([
@@ -492,7 +493,7 @@ export default function MentorDashboard() {
       const token = localStorage.getItem("authToken") || localStorage.getItem("accessToken");
       if (!token) return;
 
-      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+      const apiUrl = API_BASE_URL;
       const response = await fetch(`${apiUrl}/mentors/sessions/${sessionId}/approve`, {
         method: "POST",
         headers: {
@@ -519,7 +520,7 @@ export default function MentorDashboard() {
       const token = localStorage.getItem("authToken") || localStorage.getItem("accessToken");
       if (!token) return;
 
-      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+      const apiUrl = API_BASE_URL;
       const response = await fetch(`${apiUrl}/mentors/sessions/${sessionId}/reject`, {
         method: "POST",
         headers: {
@@ -996,7 +997,7 @@ export default function MentorDashboard() {
                       return;
                     }
                     const response = await fetch(
-                      `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/ratings/careernav`,
+                      `${API_BASE_URL}/ratings/careernav`,
                       {
                         method: "POST",
                         headers: {

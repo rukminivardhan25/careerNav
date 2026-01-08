@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Calendar, Clock, CheckCircle, XCircle, AlertCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/api";
 
 interface Session {
   id: string;
@@ -51,7 +52,7 @@ export default function StudentSessions() {
         throw new Error("Authentication token not found");
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+      const apiUrl = API_BASE_URL;
 
       // Fetch all sessions for the mentor, then filter by studentId
       const response = await fetch(`${apiUrl}/mentors/dashboard/ongoing-sessions`, {

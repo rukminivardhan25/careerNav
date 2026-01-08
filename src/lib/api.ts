@@ -1,6 +1,12 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+// Base URL without /api (for sockets and file URLs)
+export const BASE_URL = import.meta.env.VITE_API_URL 
+  ? import.meta.env.VITE_API_URL.replace(/\/api$/, "")
+  : "https://career-nav-backend.onrender.com";
+
+// API base URL with /api (for all API calls)
+export const API_BASE_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
 
 class ApiClient {
   private client: AxiosInstance;

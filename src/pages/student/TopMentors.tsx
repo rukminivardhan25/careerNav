@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { API_BASE_URL } from "@/lib/api";
 
 interface Mentor {
   id: string;
@@ -39,8 +40,7 @@ export default function TopMentors() {
         setLoading(true);
         setError(null);
         
-        const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
-        const response = await fetch(`${apiUrl}/mentors/top`);
+        const response = await fetch(`${API_BASE_URL}/mentors/top`);
         
         if (!response.ok) {
           throw new Error("Failed to fetch top mentors");

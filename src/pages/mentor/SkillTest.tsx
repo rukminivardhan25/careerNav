@@ -20,8 +20,9 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { getAuthToken } from "@/lib/auth";
+import { API_BASE_URL } from "@/lib/api";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
+const API_URL = API_BASE_URL;
 
 interface Course {
   id: number;

@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { getAuthToken } from "@/lib/auth";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/api";
 
 interface InterviewQuestion {
   id: number;
@@ -201,7 +202,7 @@ export default function InterviewSession() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/interviews/complete`,
+        `${API_BASE_URL}/interviews/complete`,
         {
           method: "POST",
           headers: {
