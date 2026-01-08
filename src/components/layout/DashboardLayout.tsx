@@ -12,7 +12,7 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children, role, title }: DashboardLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
@@ -36,22 +36,26 @@ export function DashboardLayout({ children, role, title }: DashboardLayoutProps)
     <div className="min-h-screen bg-background">
       {/* Mobile sidebar overlay - does NOT affect layout */}
       <div className="lg:hidden">
-        {/* Mobile sidebar backdrop */}
-        {sidebarOpen && (
+        {/* Mobile sidebar backdrop - semi-transparent overlay */}
+        {isSidebarOpen && (
           <div
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30"
-            onClick={() => setSidebarOpen(false)}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 transition-opacity duration-300"
+            onClick={() => setIsSidebarOpen(false)}
+            aria-hidden="true"
           />
         )}
 
-        {/* Mobile sidebar - fixed overlay, hidden when closed */}
+        {/* Mobile sidebar - fixed overlay, slides in from left */}
         <div
           className={cn(
-            "fixed inset-y-0 left-0 z-40 transition-transform duration-300",
-            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+            "fixed inset-y-0 left-0 z-40 w-64 transition-transform duration-300 ease-in-out",
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           )}
         >
-          <DashboardSidebar role={role} />
+          <DashboardSidebar 
+            role={role} 
+            onLinkClick={() => setIsSidebarOpen(false)}
+          />
         </div>
       </div>
 
@@ -70,8 +74,9 @@ export function DashboardLayout({ children, role, title }: DashboardLayoutProps)
                 variant="ghost"
                 size="icon"
                 className="lg:hidden flex-shrink-0"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                 aria-label="Toggle sidebar"
+                aria-expanded={isSidebarOpen}
               >
                 <Menu className="h-5 w-5" />
               </Button>

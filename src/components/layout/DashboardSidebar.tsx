@@ -28,6 +28,7 @@ import { API_BASE_URL, BASE_URL } from "@/lib/api";
 
 interface SidebarProps {
   role: "student" | "mentor";
+  onLinkClick?: () => void; // Callback to close sidebar on mobile when link is clicked
 }
 
 const studentLinks = [
@@ -52,7 +53,7 @@ const mentorLinks = [
   { label: "Profile", href: "/mentor/profile", icon: User },
 ];
 
-export function DashboardSidebar({ role }: SidebarProps) {
+export function DashboardSidebar({ role, onLinkClick }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -177,7 +178,7 @@ export function DashboardSidebar({ role }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300",
+        "h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300",
         "w-64",
         collapsed && "lg:w-16"
       )}
@@ -185,7 +186,7 @@ export function DashboardSidebar({ role }: SidebarProps) {
       <div className="flex flex-col h-full">
         {/* Logo */}
         <div className="flex items-center justify-between h-16 px-3 sm:px-4 border-b border-sidebar-border">
-          <Link to="/" className="flex items-center gap-2 min-w-0">
+          <Link to="/" onClick={onLinkClick} className="flex items-center gap-2 min-w-0">
             <div className="relative flex-shrink-0">
               <Brain className="h-6 w-6 sm:h-8 sm:w-8 text-sidebar-primary" />
               <div className="absolute inset-0 h-6 w-6 sm:h-8 sm:w-8 bg-sidebar-primary/20 blur-lg rounded-full" />
@@ -220,6 +221,7 @@ export function DashboardSidebar({ role }: SidebarProps) {
                 <li key={link.href}>
                   <Link
                     to={link.href}
+                    onClick={onLinkClick}
                     className={cn(
                       "flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg transition-all duration-200",
                       isActive
