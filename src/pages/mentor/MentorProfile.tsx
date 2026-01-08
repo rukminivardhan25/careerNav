@@ -29,7 +29,7 @@ import {
 import { toast } from "sonner";
 import { getCurrentUser, getAuthToken } from "@/lib/auth";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
 
 // Helper function to get first letter of first name
 const getInitials = (name: string): string => {
@@ -127,9 +127,9 @@ export default function MentorProfile() {
             let fullUrl = photoUrl;
             if (!photoUrl.startsWith("http")) {
               // photoUrl from backend is like "/api/uploads/profiles/..."
-              // API_URL is like "http://localhost:5000/api"
-              const base = API_URL.replace("/api", ""); // "http://localhost:5000"
-              fullUrl = `${base}${photoUrl}`; // "http://localhost:5000/api/uploads/..."
+              // API_URL is like "https://career-nav-backend.onrender.com/api"
+              const base = API_URL.replace("/api", ""); // "https://career-nav-backend.onrender.com"
+              fullUrl = `${base}${photoUrl}`; // "https://career-nav-backend.onrender.com/api/uploads/..."
             }
             // Add cache-busting to ensure fresh image
             fullUrl = `${fullUrl}?t=${Date.now()}`;
@@ -273,10 +273,10 @@ export default function MentorProfile() {
           let fullUrl = photoUrl;
           if (!photoUrl.startsWith("http")) {
             // photoUrl from backend is like "/api/uploads/profiles/..."
-            // API_URL is like "http://localhost:5000/api"
-            // We need: "http://localhost:5000/api/uploads/profiles/..."
-            const base = API_URL.replace("/api", ""); // "http://localhost:5000"
-            fullUrl = `${base}${photoUrl}`; // "http://localhost:5000/api/uploads/..."
+            // API_URL is like "https://career-nav-backend.onrender.com/api"
+            // We need: "https://career-nav-backend.onrender.com/api/uploads/profiles/..."
+            const base = API_URL.replace("/api", ""); // "https://career-nav-backend.onrender.com"
+            fullUrl = `${base}${photoUrl}`; // "https://career-nav-backend.onrender.com/api/uploads/..."
           }
           
           // Add cache-busting query param to force image reload

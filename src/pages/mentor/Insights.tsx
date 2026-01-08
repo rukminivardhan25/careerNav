@@ -29,7 +29,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAuthToken } from "@/lib/auth";
 import { toast } from "sonner";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
 
 // Helper to get initials
 const getInitials = (name: string): string => {

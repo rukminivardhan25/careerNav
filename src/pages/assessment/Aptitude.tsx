@@ -130,7 +130,7 @@ export default function AptitudeAssessment() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/assessments/start?type=aptitude`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/assessments/start?type=aptitude`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -335,7 +335,7 @@ export default function AptitudeAssessment() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/assessments/submit`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/assessments/submit`,
         {
           method: "POST",
           headers: {

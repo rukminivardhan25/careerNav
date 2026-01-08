@@ -74,7 +74,7 @@ export default function Assessment() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/profile/check`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile/check`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -93,7 +93,7 @@ export default function Assessment() {
         // Try to fetch profile directly
         try {
           const profileResponse = await fetch(
-            `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/profile`,
+            `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -190,7 +190,7 @@ export default function Assessment() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/assessments/generate-report`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/assessments/generate-report`,
         {
           method: "POST",
           headers: {

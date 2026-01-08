@@ -51,7 +51,7 @@ export default function StudentSessions() {
         throw new Error("Authentication token not found");
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
 
       // Fetch all sessions for the mentor, then filter by studentId
       const response = await fetch(`${apiUrl}/mentors/dashboard/ongoing-sessions`, {

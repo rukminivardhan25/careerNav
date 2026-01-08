@@ -39,7 +39,7 @@ export default function StudentLogin() {
     const fetchReview = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/public/random-review?role=STUDENT`
+          `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/public/random-review?role=STUDENT`
         );
         const data = await response.json();
         
@@ -75,7 +75,7 @@ export default function StudentLogin() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/login`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/auth/login`,
         {
           method: "POST",
           headers: {
@@ -153,7 +153,7 @@ export default function StudentLogin() {
         // Check if profile is completed
         try {
           const profileCheckResponse = await fetch(
-            `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/profile/check`,
+            `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile/check`,
             {
               headers: {
                 Authorization: `Bearer ${accessToken}`,

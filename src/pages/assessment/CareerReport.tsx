@@ -57,7 +57,7 @@ export default function CareerReport() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/assessments/report/${reportId || "latest"}`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/assessments/report/${reportId || "latest"}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -137,7 +137,7 @@ export default function CareerReport() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/careers/select-and-generate-path`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/careers/select-and-generate-path`,
         {
           method: "POST",
           headers: {

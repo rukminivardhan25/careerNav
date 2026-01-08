@@ -51,7 +51,7 @@ import { getAuthToken, getCurrentUser } from "@/lib/auth";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
 
 const defaultResumeData: ResumeData = {
   header: {

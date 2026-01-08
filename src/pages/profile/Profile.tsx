@@ -35,7 +35,7 @@ export default function Profile() {
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [profileBadges, setProfileBadges] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
   const [formData, setFormData] = useState({
     school_or_college: "",
     education_type: "",
@@ -76,7 +76,7 @@ export default function Profile() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/profile`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -334,7 +334,7 @@ export default function Profile() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/profile`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile`,
         {
           method: "POST",
           headers: {

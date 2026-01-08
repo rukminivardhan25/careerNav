@@ -116,7 +116,7 @@ export default function MentorConnect() {
         setLoading(true);
         setError(null);
         
-        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
         const response = await fetch(`${apiUrl}/mentors/${mentorId}`);
         
         if (!response.ok) {
@@ -185,7 +185,7 @@ export default function MentorConnect() {
 
       try {
         setLoadingPlans(true);
-        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
         const response = await fetch(`${apiUrl}/plans?skill=${encodeURIComponent(mentorSkill.skillName)}`);
 
         if (!response.ok) {
@@ -219,7 +219,7 @@ export default function MentorConnect() {
 
     try {
       setLoadingTopics((prev) => ({ ...prev, [planId]: true }));
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/plans/${planId}/topics`);
 
       if (!response.ok) {
@@ -422,7 +422,7 @@ export default function MentorConnect() {
 
       const sessionType = `${plan.planTitle} - ${plan.sessionsPerWeek} sessions/week`;
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/sessions/request`, {
         method: "POST",
         headers: {
@@ -630,7 +630,7 @@ export default function MentorConnect() {
                     try {
                       setLoadingPlans(true);
                       setError(null);
-                      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+                      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
                       const response = await fetch(`${apiUrl}/plans?skill=${encodeURIComponent(mentorSkill.skillName)}`);
                       if (!response.ok) throw new Error("Failed to fetch plans");
                       const data = await response.json();

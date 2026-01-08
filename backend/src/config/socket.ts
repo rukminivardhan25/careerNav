@@ -11,9 +11,15 @@ const prisma = new PrismaClient();
 let io: SocketIOServer;
 
 export function initializeSocketIO(httpServer: HTTPServer) {
+  // CORS allowlist: local development and production frontend
+  const allowedOrigins = [
+    "http://localhost:5173",
+    "https://career-nav-beta.vercel.app",
+  ];
+
   io = new SocketIOServer(httpServer, {
     cors: {
-      origin: process.env.FRONTEND_URL || "http://localhost:5173",
+      origin: allowedOrigins,
       methods: ["GET", "POST"],
       credentials: true,
     },

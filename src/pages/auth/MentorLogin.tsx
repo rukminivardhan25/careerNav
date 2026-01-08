@@ -39,7 +39,7 @@ export default function MentorLogin() {
     const fetchReview = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/public/random-review?role=MENTOR`
+          `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/public/random-review?role=MENTOR`
         );
         const data = await response.json();
         
@@ -78,7 +78,7 @@ export default function MentorLogin() {
       const normalizedEmail = email.toLowerCase().trim();
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/login`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/auth/login`,
         {
           method: "POST",
           headers: {
@@ -156,7 +156,7 @@ export default function MentorLogin() {
         // Check if profile is completed
         try {
           const profileCheckResponse = await fetch(
-            `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/profile/check`,
+            `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile/check`,
             {
               headers: {
                 Authorization: `Bearer ${accessToken}`,

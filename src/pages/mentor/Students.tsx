@@ -106,7 +106,7 @@ export default function Students() {
     setError(null);
     try {
       const token = localStorage.getItem("authToken");
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
 
       // Fetch all three types of sessions in parallel
       const [paymentPendingRes, ongoingRes, completedRes] = await Promise.all([
@@ -162,7 +162,7 @@ export default function Students() {
     setCancelling(true);
     try {
       const token = localStorage.getItem("authToken");
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
 
       const response = await fetch(`${apiUrl}/mentors/sessions/${cancelSessionId}/cancel`, {
         method: "POST",

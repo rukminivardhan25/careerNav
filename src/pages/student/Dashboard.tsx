@@ -105,7 +105,7 @@ export default function StudentDashboard() {
 
       // Fetch dashboard data
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/dashboard`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/dashboard`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -155,7 +155,7 @@ export default function StudentDashboard() {
 
       // Fetch computed dashboard metrics
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/dashboard/metrics`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/dashboard/metrics`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -419,7 +419,7 @@ export default function StudentDashboard() {
                       return;
                     }
                     const response = await fetch(
-                      `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/ratings/careernav`,
+                      `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/ratings/careernav`,
                       {
                         method: "POST",
                         headers: {

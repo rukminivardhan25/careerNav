@@ -42,7 +42,7 @@ export function TopMentorsSidebar({ collapsed }: TopMentorsSidebarProps) {
         setLoading(true);
         setError(null);
         
-        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
         const response = await fetch(`${apiUrl}/mentors/top`);
         
         if (!response.ok) {

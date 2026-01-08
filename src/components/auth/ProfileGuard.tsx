@@ -28,7 +28,7 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/profile/check`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile/check`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

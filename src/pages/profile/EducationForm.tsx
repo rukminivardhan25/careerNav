@@ -125,7 +125,7 @@ export default function EducationForm() {
       });
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/profile`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/profile`,
         {
           method: "POST",
           headers: {

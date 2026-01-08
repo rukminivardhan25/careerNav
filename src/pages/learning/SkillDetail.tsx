@@ -64,7 +64,7 @@ export default function SkillDetail() {
 
       // Fetch skill detail from backend
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/learning-paths/skill/${skillId}`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/learning-paths/skill/${skillId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -148,7 +148,7 @@ export default function SkillDetail() {
 
       // Mark skill as completed
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/learning-paths/skill/${skillId}/complete`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/learning-paths/skill/${skillId}/complete`,
         {
           method: "POST",
           headers: {

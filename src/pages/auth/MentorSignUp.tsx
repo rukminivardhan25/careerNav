@@ -45,7 +45,7 @@ export default function MentorSignUp() {
       const normalizedEmail = email.toLowerCase().trim();
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/signup`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/auth/signup`,
         {
           method: "POST",
           headers: {

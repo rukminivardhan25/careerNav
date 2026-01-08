@@ -5,7 +5,7 @@
 import { io, Socket } from "socket.io-client";
 import { getAuthToken } from "./auth";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com";
 
 // Module-level singleton - ensures only ONE socket instance
 // This persists across React StrictMode remounts and hot reloads

@@ -62,7 +62,7 @@ export default function IndustryInsights() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/industry/insights`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/industry/insights`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

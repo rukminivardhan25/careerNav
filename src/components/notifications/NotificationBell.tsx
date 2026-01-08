@@ -12,7 +12,7 @@ import { getAuthToken } from "@/lib/auth";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
 
 interface Notification {
   id: number;

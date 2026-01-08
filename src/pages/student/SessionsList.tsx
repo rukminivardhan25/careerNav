@@ -147,7 +147,7 @@ export default function SessionsList() {
       const token = localStorage.getItem("authToken");
       if (!token) return;
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/students/dashboard/summary`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -191,7 +191,7 @@ export default function SessionsList() {
         throw new Error("Authentication token not found");
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/students/sessions`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -246,7 +246,7 @@ export default function SessionsList() {
         throw new Error("Authentication token not found");
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/sessions/${sessionToPay.sessionId}/mock-payment`, {
         method: "POST",
         headers: {
@@ -284,7 +284,7 @@ export default function SessionsList() {
         throw new Error("Authentication token not found");
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/sessions/${sessionId}/cancel`, {
         method: "POST",
         headers: {
@@ -318,7 +318,7 @@ export default function SessionsList() {
         throw new Error("Authentication token not found");
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/sessions/${sessionId}`, {
         method: "DELETE",
         headers: {

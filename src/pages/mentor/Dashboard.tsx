@@ -323,7 +323,7 @@ export default function MentorDashboard() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
 
       // Fetch all data in parallel with error handling
       const [statsRes, pendingRes, scheduledRes, coursesRes] = await Promise.all([
@@ -492,7 +492,7 @@ export default function MentorDashboard() {
       const token = localStorage.getItem("authToken") || localStorage.getItem("accessToken");
       if (!token) return;
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/mentors/sessions/${sessionId}/approve`, {
         method: "POST",
         headers: {
@@ -519,7 +519,7 @@ export default function MentorDashboard() {
       const token = localStorage.getItem("authToken") || localStorage.getItem("accessToken");
       if (!token) return;
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/mentors/sessions/${sessionId}/reject`, {
         method: "POST",
         headers: {
@@ -996,7 +996,7 @@ export default function MentorDashboard() {
                       return;
                     }
                     const response = await fetch(
-                      `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/ratings/careernav`,
+                      `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/ratings/careernav`,
                       {
                         method: "POST",
                         headers: {

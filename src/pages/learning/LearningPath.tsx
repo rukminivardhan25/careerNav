@@ -59,7 +59,7 @@ export default function LearningPath() {
 
       // Fetch learning path from backend (it will use selected career)
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/learning-paths/my`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/learning-paths/my`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

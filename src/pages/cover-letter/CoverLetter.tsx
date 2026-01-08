@@ -33,7 +33,7 @@ import { getAuthToken, getCurrentUser } from "@/lib/auth";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
 
 interface CoverLetter {
   id: number;

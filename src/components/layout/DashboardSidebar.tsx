@@ -82,7 +82,7 @@ export function DashboardSidebar({ role }: SidebarProps) {
         setProfilePhoto(null);
       } else if (event.detail?.photoUrl) {
         const photoUrl = event.detail.photoUrl;
-        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
         const fullUrl = photoUrl.startsWith("http")
           ? photoUrl
           : `${API_URL.replace("/api", "")}${photoUrl}`;
@@ -101,7 +101,7 @@ export function DashboardSidebar({ role }: SidebarProps) {
       const token = localStorage.getItem("authToken");
       if (!token) return;
 
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${API_URL}/mentors/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -113,7 +113,7 @@ export function DashboardSidebar({ role }: SidebarProps) {
         if (data.profile?.basicInfo?.photoUrl) {
           const photoUrl = data.profile.basicInfo.photoUrl;
           // Construct full URL if it's a relative path
-          const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+          const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
           const baseUrl = photoUrl.startsWith("http") 
             ? photoUrl 
             : `${API_URL.replace("/api", "")}${photoUrl}`;
@@ -134,7 +134,7 @@ export function DashboardSidebar({ role }: SidebarProps) {
       const token = localStorage.getItem("authToken");
       if (!token) return;
 
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const API_URL = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${API_URL}/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,

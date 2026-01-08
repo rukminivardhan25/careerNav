@@ -145,7 +145,7 @@ export default function MentorSessionDetail() {
           throw new Error("Authentication required");
         }
 
-        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
         const response = await fetch(`${apiUrl}/mentors/sessions/${sessionId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -199,7 +199,7 @@ export default function MentorSessionDetail() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/sessions/${sessionId}/schedule`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -231,7 +231,7 @@ export default function MentorSessionDetail() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/sessions/${sessionId}/messages`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -279,7 +279,7 @@ export default function MentorSessionDetail() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/sessions/${sessionId}/schedule/${scheduleId}/complete`, {
         method: "POST",
         headers: {
@@ -422,7 +422,7 @@ export default function MentorSessionDetail() {
             try {
               const token = getAuthToken();
               if (!token) return;
-              const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+              const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
               const response = await fetch(`${apiUrl}/mentors/sessions/${sessionId}`, {
                 headers: { Authorization: `Bearer ${token}` },
               });
@@ -508,7 +508,7 @@ export default function MentorSessionDetail() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/sessions/${sessionId}/messages`, {
         method: "POST",
         headers: {
@@ -583,7 +583,7 @@ export default function MentorSessionDetail() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/sessions/${sessionId}/upload`, {
         method: "POST",
         headers: {
@@ -612,7 +612,7 @@ export default function MentorSessionDetail() {
   };
 
   const handleDownloadFile = (fileURL: string, fileName: string) => {
-    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com";
     const fullURL = fileURL.startsWith("http") ? fileURL : `${apiUrl}${fileURL}`;
     window.open(fullURL, "_blank");
   };
@@ -628,7 +628,7 @@ export default function MentorSessionDetail() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/sessions/${sessionId}/zoom-link`, {
         method: "POST",
         headers: {
@@ -688,7 +688,7 @@ export default function MentorSessionDetail() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/sessions/${sessionId}/complete`, {
         method: "POST",
         headers: {
@@ -743,7 +743,7 @@ export default function MentorSessionDetail() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/assignments?sessionId=${sessionId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -777,7 +777,7 @@ export default function MentorSessionDetail() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/assignments`, {
         method: "POST",
         headers: {
@@ -821,7 +821,7 @@ export default function MentorSessionDetail() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/assignments/${assignment.id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -968,7 +968,7 @@ export default function MentorSessionDetail() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/sessions/${sessionId}/schedule/${scheduleId}/resources`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -1022,7 +1022,7 @@ export default function MentorSessionDetail() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
       const response = await fetch(`${apiUrl}/sessions/${sessionId}/schedule/${selectedScheduleId}/resources`, {
         method: "POST",
         headers: {
@@ -1836,7 +1836,7 @@ export default function MentorSessionDetail() {
                         onClick={() => {
                           const fileUrl = resource.fileUrl.startsWith("http") 
                             ? resource.fileUrl 
-                            : `${import.meta.env.VITE_API_URL || "http://localhost:5000"}${resource.fileUrl}`;
+                            : `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com"}${resource.fileUrl}`;
                           window.open(fileUrl, "_blank");
                         }}
                       >

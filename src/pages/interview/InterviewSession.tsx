@@ -201,7 +201,7 @@ export default function InterviewSession() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/interviews/complete`,
+        `${import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api"}/interviews/complete`,
         {
           method: "POST",
           headers: {

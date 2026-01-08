@@ -102,7 +102,7 @@ export default function MockInterviewHub() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
 
       // Generate initial interviews
       const response = await fetch(`${apiUrl}/interviews/generate`, {
@@ -138,7 +138,7 @@ export default function MockInterviewHub() {
         return;
       }
 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL || "https://career-nav-backend.onrender.com/api";
 
       const filters: any = {};
       if (skillFilter !== "all") filters.skill = skillFilter;
