@@ -6,12 +6,12 @@ import { GoogleProfile } from "../types";
 const prisma = new PrismaClient();
 
 // Serialize user for session
-passport.serializeUser((user: any, done) => {
+passport.serializeUser((user: any, done: any) => {
   done(null, user.id);
 });
 
 // Deserialize user from session
-passport.deserializeUser(async (id: string, done) => {
+passport.deserializeUser(async (id: string, done: any) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id },
