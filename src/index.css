@@ -296,3 +296,39 @@
     text-wrap: balance;
   }
 }
+
+/* Mobile horizontal scrolling for Ongoing Sessions and Skill Roadmap cards */
+/* Only applies to mobile screens (max-width: 640px) */
+@media (max-width: 640px) {
+  /* Target Ongoing Sessions cards in mentor Students page */
+  /* Selector: glass-card with both border-l-4 and border-primary classes */
+  .glass-card.border-l-4[class*="border-primary"]:not([class*="border-success"]):not([class*="border-warning"]) > div:first-child {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    /* Hide scrollbar - cross-browser safe */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .glass-card.border-l-4[class*="border-primary"]:not([class*="border-success"]):not([class*="border-warning"]) > div:first-child::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+
+  /* Target Skill Roadmap cards in Learning Path page */
+  /* Selector: glass-card with cursor-pointer class, then direct child div with relative class */
+  .glass-card[class*="cursor-pointer"] > div[class*="relative"] {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    /* Hide scrollbar - cross-browser safe */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .glass-card[class*="cursor-pointer"] > div[class*="relative"]::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+}
