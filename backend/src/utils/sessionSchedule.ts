@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
  * Update session schedule status based on current date/time
  * 
  * Rules:
- * - All sessions scheduled for TODAY unlock at 1:25 AM IST and become UPCOMING
+ * - All sessions scheduled for TODAY unlock at 1:41 AM IST and become UPCOMING
  * - Sessions are marked COMPLETED when end time (start time + 1 hour) has passed
  * - Sessions scheduled for future dates remain LOCKED
  * - COMPLETED sessions are never changed
@@ -69,7 +69,7 @@ export async function updateSessionScheduleStatus(sessionId: string): Promise<an
           data: { status: ScheduleStatus.COMPLETED },
         });
       }
-      // Check if session is scheduled for today (at 1:25 AM IST, all today's sessions unlock)
+      // Check if session is scheduled for today (at 1:41 AM IST, all today's sessions unlock)
       else if (scheduledDateOnly.getTime() === todayStartNormalized.getTime()) {
         // Session is scheduled for today → mark as UPCOMING (unlocked at midnight)
         await prisma.session_schedule.update({
@@ -221,8 +221,8 @@ export async function evaluateMentorshipSessionStatus(sessionId: string): Promis
 }
 
 /**
- * Unlock all sessions scheduled for today at 1:25 AM IST
- * This function should be called by the cron job at 1:25 AM IST
+ * Unlock all sessions scheduled for today at 1:41 AM IST
+ * This function should be called by the cron job at 1:41 AM IST
  * to unlock all today's sessions and make them UPCOMING
  */
 export async function unlockTodaySessions(): Promise<void> {
