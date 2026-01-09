@@ -420,6 +420,7 @@ export class MentorService {
         }
 
         // Calculate completion status for each schedule item based on end time
+        const now = getISTNow();
         const hasOngoingItem = todayScheduleItems.some((item) => {
           const scheduledDateTime = new Date(item.scheduled_date);
           const [hours, minutes] = item.scheduled_time.split(':').map(Number);

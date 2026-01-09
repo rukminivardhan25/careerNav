@@ -271,6 +271,7 @@ router.get("/sessions", authenticateToken, async (req, res) => {
       const todayScheduleItems = session.session_schedule || [];
       
       // Calculate end_time for each schedule item (scheduled_date + scheduled_time + 1 hour default)
+      const now = getISTNow();
       const scheduleItemsWithEndTime = todayScheduleItems.map((item) => {
         const scheduledDateTime = new Date(item.scheduled_date);
         const [hours, minutes] = item.scheduled_time.split(':').map(Number);

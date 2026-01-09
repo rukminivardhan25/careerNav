@@ -92,7 +92,8 @@ router.get("/", authenticateToken, async (req: Request, res: Response) => {
     // Calculate streak: count consecutive green days ending today
     // Don't count days before account creation
     let streakCount = 0;
-    let checkDate = new Date(today);
+    const todayDate = getISTNow();
+    let checkDate = new Date(todayDate);
     
     // Start from today and count backwards, but stop at account creation date
     while (true) {
@@ -164,18 +165,18 @@ router.get("/", authenticateToken, async (req: Request, res: Response) => {
     // Only record if today is on or after account creation date
     const todayWasAlreadyRecorded = activityDates.has(todayStr);
     if (!todayWasAlreadyRecorded && todayStr >= accountCreatedDateStr) {
-      // Create date using local time to match how we're normalizing dates
-      const todayDate = new Date(todayYear, todayMonth, todayDay);
+      // Create date using IST components to match how we're normalizing dates
+      const todayDateForDB = new Date(todayComponents.year, todayComponents.month - 1, todayComponents.day);
       await prisma.user_activity.upsert({
         where: {
           user_id_activity_date: {
             user_id: userId,
-            activity_date: todayDate,
+            activity_date: todayDateForDB,
           },
         },
         create: {
           user_id: userId,
-          activity_date: todayDate,
+          activity_date: todayDateForDB,
           activity_type: "dashboard_view",
         },
         update: {},
@@ -185,7 +186,7 @@ router.get("/", authenticateToken, async (req: Request, res: Response) => {
       
       // Recalculate streak now that today is included
       streakCount = 0;
-      let checkDate = new Date(today);
+      let checkDate = new Date(todayDate);
       
       // Start from today and count backwards, but stop at account creation date
       while (true) {
