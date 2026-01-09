@@ -341,21 +341,6 @@ router.post("/:sessionId/messages", authenticateToken, async (req, res) => {
       });
     }
 
-    // Check if chat is enabled based on session status
-    // Disabled for: PENDING, APPROVED (waiting for payment)
-    // Read-only for: COMPLETED, CANCELLED (can view but not send)
-    // Enabled for: SCHEDULED, PAID
-    if (session.status === SessionStatus.PENDING || session.status === SessionStatus.APPROVED) {
-      return res.status(403).json({
-        error: "Chat is disabled. Please complete payment first.",
-      });
-    }
-    if (session.status === SessionStatus.COMPLETED || session.status === SessionStatus.CANCELLED) {
-      return res.status(403).json({
-        error: "Chat is read-only for completed/cancelled sessions.",
-      });
-    }
-
     // Determine sender role from JWT
     const senderRole = userRole === "STUDENT" ? "STUDENT" : "MENTOR";
 
@@ -1376,18 +1361,6 @@ router.post("/:sessionId/upload", authenticateToken, uploadFile.single("file"), 
     if (session.student_id !== userId && session.mentor_id !== userId) {
       return res.status(403).json({
         error: "You don't have permission to upload files in this session",
-      });
-    }
-
-    // Check if chat is enabled based on session status
-    if (session.status === SessionStatus.PENDING || session.status === SessionStatus.APPROVED) {
-      return res.status(403).json({
-        error: "Chat is disabled. Please complete payment first.",
-      });
-    }
-    if (session.status === SessionStatus.COMPLETED || session.status === SessionStatus.CANCELLED) {
-      return res.status(403).json({
-        error: "Chat is read-only for completed/cancelled sessions.",
       });
     }
 
