@@ -330,14 +330,14 @@ export default function Students() {
                         </p>
                       </div>
                 ) : (
-                <div className="overflow-x-auto -mx-4 px-4">
-                  <div className="flex gap-4 min-w-max pb-4">
+                <div className="space-y-4">
                   {filteredPaymentPending.map((session) => (
                     <div
                       key={session.id}
-                      className="glass-card rounded-xl p-6 hover:shadow-card-hover transition-all duration-300 border-l-4 border-warning min-w-[600px]"
+                      className="glass-card rounded-xl p-6 hover:shadow-card-hover transition-all duration-300 border-l-4 border-warning"
                     >
-                      <div className="flex items-center gap-6">
+                      <div className="overflow-x-auto">
+                        <div className="flex items-center gap-6 min-w-max">
                         {/* Left: Student Info */}
                         <div className="flex items-center gap-4 flex-shrink-0">
                           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-warning to-warning/50 flex items-center justify-center text-white font-semibold text-body-sm">
@@ -354,7 +354,7 @@ export default function Students() {
                         </div>
 
                         {/* Middle: Skill & Date */}
-                        <div className="flex-1 flex items-center gap-6">
+                        <div className="flex items-center gap-6 flex-shrink-0">
                         <div>
                             <p className="text-body-sm text-muted-foreground mb-1">Skill</p>
                             <p className="text-body-sm font-medium text-foreground">
@@ -389,10 +389,10 @@ export default function Students() {
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
+                        </div>
                       </div>
                     </div>
                   ))}
-                  </div>
                 </div>
               )}
             </div>
@@ -413,14 +413,14 @@ export default function Students() {
                   </p>
                 </div>
               ) : (
-                <div className="overflow-x-auto -mx-4 px-4">
-                  <div className="flex gap-4 min-w-max pb-4">
+                <div className="space-y-4">
                   {filteredOngoing.map((session) => (
                     <div
                       key={session.id}
-                      className="glass-card rounded-xl p-6 hover:shadow-card-hover transition-all duration-300 border-l-4 border-primary min-w-[600px]"
+                      className="glass-card rounded-xl p-6 hover:shadow-card-hover transition-all duration-300 border-l-4 border-primary"
                     >
-                      <div className="flex items-center gap-6">
+                      <div className="overflow-x-auto">
+                        <div className="flex items-center gap-6 min-w-max">
                         {/* Left: Student Info */}
                         <div className="flex items-center gap-4 flex-shrink-0">
                           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-body-sm">
@@ -437,7 +437,7 @@ export default function Students() {
                         </div>
 
                         {/* Middle: Skill & Schedule */}
-                        <div className="flex-1 flex items-center gap-6">
+                        <div className="flex items-center gap-6 flex-shrink-0">
                           <div>
                             <p className="text-body-sm text-muted-foreground mb-1">Skill</p>
                             <p className="text-body-sm font-medium text-foreground">
@@ -467,10 +467,10 @@ export default function Students() {
                             View Details
                           </Button>
                         </div>
-          </div>
+                        </div>
+                      </div>
                     </div>
                   ))}
-                  </div>
                 </div>
               )}
         </div>
@@ -491,14 +491,14 @@ export default function Students() {
                   </p>
                 </div>
               ) : (
-                <div className="overflow-x-auto -mx-4 px-4">
-                  <div className="flex gap-4 min-w-max pb-4">
+                <div className="space-y-4">
                   {filteredCompleted.map((session) => (
                     <div
                       key={session.id}
-                      className="glass-card rounded-xl p-6 hover:shadow-card-hover transition-all duration-300 border-l-4 border-success/50 min-w-[600px]"
+                      className="glass-card rounded-xl p-6 hover:shadow-card-hover transition-all duration-300 border-l-4 border-success/50"
                     >
-                      <div className="flex items-center gap-6">
+                      <div className="overflow-x-auto">
+                        <div className="flex items-center gap-6 min-w-max">
                         {/* Left: Student Info */}
                         <div className="flex items-center gap-4 flex-shrink-0">
                           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-success to-success/50 flex items-center justify-center text-white font-semibold text-body-sm">
@@ -515,7 +515,7 @@ export default function Students() {
           </div>
 
                         {/* Middle: Skill & Completed Date */}
-                        <div className="flex-1 flex items-center gap-6">
+                        <div className="flex items-center gap-6 flex-shrink-0">
               <div>
                             <p className="text-body-sm text-muted-foreground mb-1">Skill</p>
                             <p className="text-body-sm font-medium text-foreground">
@@ -545,10 +545,10 @@ export default function Students() {
                             View Details
                           </Button>
                         </div>
-            </div>
-          </div>
+                        </div>
+                      </div>
+                    </div>
                   ))}
-                  </div>
                 </div>
               )}
             </div>
