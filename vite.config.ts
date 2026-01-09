@@ -15,6 +15,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      'react': path.resolve(__dirname, './node_modules/react'),
+      'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
     },
     dedupe: ['react', 'react-dom'],
   },
@@ -31,7 +33,17 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        manualChunks: undefined, // Keep everything in one bundle to ensure React is available
+        manualChunks(id) {
+          // Ensure React and React-DOM are always in the main bundle
+          // This prevents React from being null when hooks are called
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return undefined; // Keep in main bundle
+          }
+          // Allow other vendor code to be chunked separately
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        },
       },
     },
   },
