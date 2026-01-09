@@ -3,7 +3,7 @@
  * Handles unlocking sessions based on scheduled date/time
  */
 import { PrismaClient, ScheduleStatus, SessionStatus } from "@prisma/client";
-import { getISTNow, getISTTodayStart } from "./istTime";
+import { getISTNow, getISTTodayStart, getISTTodayEnd, createISTDateTimeFromSchedule } from "./istTime";
 
 const prisma = new PrismaClient();
 
@@ -48,27 +48,29 @@ export async function updateSessionScheduleStatus(sessionId: string): Promise<an
         continue;
       }
 
-      // Get the scheduled date (without time) for date comparison
+      // Get IST date components from scheduled_date for comparison
+      const scheduledDateIST = getISTTodayStart(); // We'll compare dates in IST
       const scheduledDateOnly = new Date(item.scheduled_date);
-      scheduledDateOnly.setHours(0, 0, 0, 0);
+      // Normalize to midnight for date comparison
+      scheduledDateOnly.setUTCHours(0, 0, 0, 0);
+      const todayStartNormalized = new Date(todayStart);
+      todayStartNormalized.setUTCHours(0, 0, 0, 0);
 
-      // Combine scheduled_date and scheduled_time to get full datetime
-      const scheduledDateTime = new Date(item.scheduled_date);
-      const [hours, minutes] = item.scheduled_time.split(":").map(Number);
-      scheduledDateTime.setHours(hours || 0, minutes || 0, 0, 0);
+      // Create IST datetime from scheduled_date and scheduled_time
+      const scheduledDateTimeIST = createISTDateTimeFromSchedule(item.scheduled_date, item.scheduled_time);
 
       // Calculate end time (default duration: 1 hour)
-      const endTime = new Date(scheduledDateTime.getTime() + 60 * 60 * 1000);
+      const endTimeIST = new Date(scheduledDateTimeIST.getTime() + 60 * 60 * 1000);
 
       // Check if end time has passed → mark as COMPLETED
-      if (now >= endTime) {
+      if (now >= endTimeIST) {
         await prisma.session_schedule.update({
           where: { id: item.id },
           data: { status: ScheduleStatus.COMPLETED },
         });
       }
       // Check if session is scheduled for today (at 12:00 AM, all today's sessions unlock)
-      else if (scheduledDateOnly.getTime() === todayStart.getTime()) {
+      else if (scheduledDateOnly.getTime() === todayStartNormalized.getTime()) {
         // Session is scheduled for today → mark as UPCOMING (unlocked at midnight)
         await prisma.session_schedule.update({
           where: { id: item.id },
@@ -76,7 +78,7 @@ export async function updateSessionScheduleStatus(sessionId: string): Promise<an
         });
       }
       // Session is in the future → mark as LOCKED
-      else if (scheduledDateOnly.getTime() > todayStart.getTime()) {
+      else if (scheduledDateOnly.getTime() > todayStartNormalized.getTime()) {
         await prisma.session_schedule.update({
           where: { id: item.id },
           data: { status: ScheduleStatus.LOCKED },
@@ -214,6 +216,66 @@ export async function evaluateMentorshipSessionStatus(sessionId: string): Promis
     }
   } catch (error) {
     console.error("[SessionSchedule] Error evaluating mentorship session status:", error);
+    throw error;
+  }
+}
+
+/**
+ * Unlock all sessions scheduled for today at midnight IST
+ * This function should be called by the cron job at 12:00 AM IST
+ * to unlock all today's sessions and make them UPCOMING
+ */
+export async function unlockTodaySessions(): Promise<void> {
+  try {
+    const todayStart = getISTTodayStart();
+    const todayEnd = getISTTodayEnd();
+    
+    console.log(`[SessionSchedule] Unlocking sessions for today (IST): ${todayStart.toISOString()} to ${todayEnd.toISOString()}`);
+    
+    // Find all LOCKED session_schedule items scheduled for today
+    const todayLockedSessions = await prisma.session_schedule.findMany({
+      where: {
+        scheduled_date: {
+          gte: todayStart,
+          lt: todayEnd,
+        },
+        status: ScheduleStatus.LOCKED,
+      },
+      select: {
+        id: true,
+        session_id: true,
+      },
+    });
+    
+    // Unlock all today's sessions
+    if (todayLockedSessions.length > 0) {
+      await prisma.session_schedule.updateMany({
+        where: {
+          id: {
+            in: todayLockedSessions.map(s => s.id),
+          },
+        },
+        data: {
+          status: ScheduleStatus.UPCOMING,
+        },
+      });
+      
+      console.log(`[SessionSchedule] Unlocked ${todayLockedSessions.length} session(s) scheduled for today`);
+      
+      // Update session status for each affected session
+      const uniqueSessionIds = [...new Set(todayLockedSessions.map(s => s.session_id))];
+      for (const sessionId of uniqueSessionIds) {
+        try {
+          await evaluateMentorshipSessionStatus(sessionId);
+        } catch (error) {
+          console.error(`[SessionSchedule] Error evaluating session ${sessionId} status:`, error);
+        }
+      }
+    } else {
+      console.log(`[SessionSchedule] No locked sessions found for today`);
+    }
+  } catch (error) {
+    console.error("[SessionSchedule] Error unlocking today's sessions:", error);
     throw error;
   }
 }

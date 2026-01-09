@@ -3,7 +3,7 @@
  * Business logic for mentor operations
  */
 import { PrismaClient, SessionStatus, TestStatus, PaymentStatus, ReviewStatus, ScheduleStatus } from "@prisma/client";
-import { getISTNow, getISTTodayStart, getISTTodayEnd } from "../utils/istTime";
+import { getISTNow, getISTTodayStart, getISTTodayEnd, createISTDateTimeFromSchedule, getISTDateComponents, getISTTimeComponents } from "../utils/istTime";
 
 const prisma = new PrismaClient();
 
@@ -422,15 +422,14 @@ export class MentorService {
         // Calculate completion status for each schedule item based on end time
         const now = getISTNow();
         const hasOngoingItem = todayScheduleItems.some((item) => {
-          const scheduledDateTime = new Date(item.scheduled_date);
-          const [hours, minutes] = item.scheduled_time.split(':').map(Number);
-          scheduledDateTime.setHours(hours || 0, minutes || 0, 0, 0);
+          // Create IST datetime from scheduled_date and scheduled_time
+          const scheduledDateTimeIST = createISTDateTimeFromSchedule(item.scheduled_date, item.scheduled_time);
           
           // Default duration: 1 hour
-          const endTime = new Date(scheduledDateTime.getTime() + 60 * 60 * 1000);
+          const endTimeIST = new Date(scheduledDateTimeIST.getTime() + 60 * 60 * 1000);
           
-          // Item is completed if current time >= end time OR mentor marked it as COMPLETED
-          const isCompleted = now >= endTime || item.status === ScheduleStatus.COMPLETED;
+          // Item is completed if current IST time >= end time OR mentor marked it as COMPLETED
+          const isCompleted = now >= endTimeIST || item.status === ScheduleStatus.COMPLETED;
           
           // If at least one item is not completed, this session counts as "today's session left"
           return !isCompleted;
@@ -679,20 +678,19 @@ export class MentorService {
         
         // Calculate isCompleted for each schedule item based on end time
         const scheduleItemsWithCompletion = todayScheduleItems.map((item) => {
-          const scheduledDateTime = new Date(item.scheduled_date);
-          const [hours, minutes] = item.scheduled_time.split(':').map(Number);
-          scheduledDateTime.setHours(hours || 0, minutes || 0, 0, 0);
+          // Create IST datetime from scheduled_date and scheduled_time
+          const scheduledDateTimeIST = createISTDateTimeFromSchedule(item.scheduled_date, item.scheduled_time);
           
           // Default duration: 1 hour
-          const endTime = new Date(scheduledDateTime.getTime() + 60 * 60 * 1000);
+          const endTimeIST = new Date(scheduledDateTimeIST.getTime() + 60 * 60 * 1000);
           
-          // Item is completed if current time >= end time OR mentor marked it as COMPLETED
-          const isCompleted = now >= endTime || item.status === ScheduleStatus.COMPLETED;
+          // Item is completed if current IST time >= end time OR mentor marked it as COMPLETED
+          const isCompleted = now >= endTimeIST || item.status === ScheduleStatus.COMPLETED;
           
           return {
             ...item,
-            scheduledDateTime,
-            endTime,
+            scheduledDateTime: scheduledDateTimeIST,
+            endTime: endTimeIST,
             isCompleted,
           };
         });
@@ -729,11 +727,8 @@ export class MentorService {
         let scheduledAt: string;
         
         if (firstScheduleItem && firstScheduleItem.scheduled_time) {
-          // Combine today's date with the session's scheduled time
-          // Parse time string (e.g., "14:00" → hours=14, minutes=0)
-          const [hours, minutes] = firstScheduleItem.scheduled_time.split(':').map(Number);
-          const todayWithSessionTime = new Date(today);
-          todayWithSessionTime.setHours(hours || 0, minutes || 0, 0, 0);
+          // Combine today's date with the session's scheduled time in IST
+          const todayWithSessionTime = createISTDateTimeFromSchedule(today, firstScheduleItem.scheduled_time);
           scheduledAt = todayWithSessionTime.toISOString();
         } else {
           // Fallback: if no schedule item found, use current time
@@ -966,21 +961,20 @@ export class MentorService {
         
         // Calculate isCompleted for each schedule item based on end time
         const scheduleItemsWithCompletion = todayScheduleItems.map((item) => {
-          const scheduledDateTime = new Date(item.scheduled_date);
-          const [hours, minutes] = item.scheduled_time.split(':').map(Number);
-          scheduledDateTime.setHours(hours || 0, minutes || 0, 0, 0);
+          // Create IST datetime from scheduled_date and scheduled_time
+          const scheduledDateTimeIST = createISTDateTimeFromSchedule(item.scheduled_date, item.scheduled_time);
           
           // Default duration: 1 hour (set by student when requesting mentorship)
-          const endTime = new Date(scheduledDateTime.getTime() + 60 * 60 * 1000);
+          const endTimeIST = new Date(scheduledDateTimeIST.getTime() + 60 * 60 * 1000);
           
-          // Item is completed if current time >= end time OR mentor marked it as COMPLETED
+          // Item is completed if current IST time >= end time OR mentor marked it as COMPLETED
           // This updates automatically every day based on current time vs end time
-          const isCompleted = now >= endTime || item.status === ScheduleStatus.COMPLETED;
+          const isCompleted = now >= endTimeIST || item.status === ScheduleStatus.COMPLETED;
           
           return {
             ...item,
-            scheduledDateTime,
-            endTime,
+            scheduledDateTime: scheduledDateTimeIST,
+            endTime: endTimeIST,
             isCompleted,
           };
         });
@@ -1012,27 +1006,22 @@ export class MentorService {
         const aLastItem = a.todayScheduleItems[a.todayScheduleItems.length - 1];
         const bLastItem = b.todayScheduleItems[b.todayScheduleItems.length - 1];
         
-        const aEndTime = new Date(aLastItem.scheduled_date);
-        const [aHours, aMinutes] = aLastItem.scheduled_time.split(':').map(Number);
-        aEndTime.setHours(aHours || 0, aMinutes || 0, 0, 0);
-        aEndTime.setTime(aEndTime.getTime() + 60 * 60 * 1000);
+        // Create IST datetime for end times
+        const aEndTimeIST = createISTDateTimeFromSchedule(aLastItem.scheduled_date, aLastItem.scheduled_time);
+        aEndTimeIST.setTime(aEndTimeIST.getTime() + 60 * 60 * 1000);
         
-        const bEndTime = new Date(bLastItem.scheduled_date);
-        const [bHours, bMinutes] = bLastItem.scheduled_time.split(':').map(Number);
-        bEndTime.setHours(bHours || 0, bMinutes || 0, 0, 0);
-        bEndTime.setTime(bEndTime.getTime() + 60 * 60 * 1000);
+        const bEndTimeIST = createISTDateTimeFromSchedule(bLastItem.scheduled_date, bLastItem.scheduled_time);
+        bEndTimeIST.setTime(bEndTimeIST.getTime() + 60 * 60 * 1000);
         
-        return bEndTime.getTime() - aEndTime.getTime();
+        return bEndTimeIST.getTime() - aEndTimeIST.getTime();
       });
 
       return completedSessions.map((session) => {
         const skillName = session.skill_name || "Unknown (Legacy)";
         // Use the last schedule item's end time as completedAt
         const lastScheduleItem = session.todayScheduleItems[session.todayScheduleItems.length - 1];
-        const scheduledDateTime = new Date(lastScheduleItem.scheduled_date);
-        const [hours, minutes] = lastScheduleItem.scheduled_time.split(':').map(Number);
-        scheduledDateTime.setHours(hours || 0, minutes || 0, 0, 0);
-        const endTime = new Date(scheduledDateTime.getTime() + 60 * 60 * 1000);
+        const scheduledDateTimeIST = createISTDateTimeFromSchedule(lastScheduleItem.scheduled_date, lastScheduleItem.scheduled_time);
+        const endTime = new Date(scheduledDateTimeIST.getTime() + 60 * 60 * 1000);
         
         return {
           id: session.id,
@@ -2368,21 +2357,23 @@ export class MentorService {
 
       paidSessions.forEach((session) => {
         session.session_schedule.forEach((item) => {
-          const scheduledDateTime = new Date(item.scheduled_date);
-          const [hours, minutes] = item.scheduled_time.split(':').map(Number);
-          scheduledDateTime.setHours(hours || 0, minutes || 0, 0, 0);
+          // Create IST datetime from scheduled_date and scheduled_time
+          const scheduledDateTimeIST = createISTDateTimeFromSchedule(item.scheduled_date, item.scheduled_time);
           
           // Default duration: 1 hour
-          const endDateTime = new Date(scheduledDateTime.getTime() + 60 * 60 * 1000);
+          const endDateTimeIST = new Date(scheduledDateTimeIST.getTime() + 60 * 60 * 1000);
           
-          // Format times as HH:MM
+          // Format times as HH:MM (extract from IST datetime)
+          const [hours, minutes] = item.scheduled_time.split(':').map(Number);
           const startTime = `${String(hours || 0).padStart(2, '0')}:${String(minutes || 0).padStart(2, '0')}`;
-          const endHours = endDateTime.getHours();
-          const endMinutes = endDateTime.getMinutes();
-          const endTime = `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
+          
+          // Get end time components from IST datetime
+          const endTimeComponents = getISTTimeComponents(endDateTimeIST);
+          const endTime = `${String(endTimeComponents.hour).padStart(2, '0')}:${String(endTimeComponents.minute).padStart(2, '0')}`;
 
-          // Get date key for this schedule item
-          const dateKey = `${scheduledDateTime.getFullYear()}-${String(scheduledDateTime.getMonth() + 1).padStart(2, '0')}-${String(scheduledDateTime.getDate()).padStart(2, '0')}`;
+          // Get date key for this schedule item (use IST date components)
+          const dateComponents = getISTDateComponents(scheduledDateTimeIST);
+          const dateKey = `${dateComponents.year}-${String(dateComponents.month).padStart(2, '0')}-${String(dateComponents.day).padStart(2, '0')}`;
           
           if (dayMap.has(dateKey)) {
             dayMap.get(dateKey)!.push({

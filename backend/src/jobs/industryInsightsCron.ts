@@ -6,6 +6,7 @@
 
 import { PrismaClient } from "@prisma/client";
 import { IndustryInsightsService } from "../services/industry.service";
+import { getISTNow, getISTTimeComponents, getISTDateComponents } from "../utils/istTime";
 
 const prisma = new PrismaClient();
 const service = new IndustryInsightsService();
@@ -17,7 +18,7 @@ const service = new IndustryInsightsService();
 export async function generateWeeklyIndustryInsights(): Promise<void> {
   try {
     console.log("[Industry Insights Cron] Starting weekly insights generation...");
-    const now = new Date();
+    const now = getISTNow(); // Use IST time
     const currentWeek = getWeekNumber(now);
     const currentYear = now.getFullYear();
 
@@ -112,15 +113,18 @@ function getWeekNumber(date: Date): number {
 }
 
 /**
- * Check if it's Monday 12:00 AM
+ * Check if it's Monday 12:00 AM IST
  */
-function isMondayMidnight(): boolean {
-  const now = new Date();
-  const day = now.getDay(); // 0 = Sunday, 1 = Monday
-  const hour = now.getHours();
-  const minute = now.getMinutes();
-
-  return day === 1 && hour === 0 && minute === 0;
+function isMondayMidnightIST(): boolean {
+  const now = getISTNow();
+  const istComponents = getISTTimeComponents(now);
+  const istDateComponents = getISTDateComponents(now);
+  
+  // Get day of week in IST
+  const istDate = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+  const day = istDate.getDay(); // 0 = Sunday, 1 = Monday
+  
+  return day === 1 && istComponents.hour === 0 && istComponents.minute === 0;
 }
 
 /**
@@ -128,12 +132,12 @@ function isMondayMidnight(): boolean {
  * Checks every minute if it's Monday 12:00 AM
  */
 export function startIndustryInsightsCron(): void {
-  console.log("[Industry Insights Cron] Weekly cron job started. Will run every Monday at 12:00 AM");
+  console.log("[Industry Insights Cron] Weekly cron job started. Will run every Monday at 12:00 AM IST");
 
-  // Check every minute
+  // Check every minute for Monday midnight IST
   setInterval(() => {
-    if (isMondayMidnight()) {
-      console.log("[Industry Insights Cron] Monday 12:00 AM detected. Generating weekly insights...");
+    if (isMondayMidnightIST()) {
+      console.log("[Industry Insights Cron] Monday 12:00 AM IST detected. Generating weekly insights...");
       generateWeeklyIndustryInsights().catch((error) => {
         console.error("[Industry Insights Cron] Error in scheduled job:", error);
       });

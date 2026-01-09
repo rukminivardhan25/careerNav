@@ -2,7 +2,7 @@ import express from "express";
 import { authenticateToken } from "../middlewares/auth.middleware";
 import { PrismaClient, SessionStatus, PaymentStatus, ScheduleStatus } from "@prisma/client";
 import { getOngoingCoursesFromSessions, type SessionWithRelations } from "../utils/courseHelpers";
-import { getISTTodayStart, getISTTodayEnd, getISTNow } from "../utils/istTime";
+import { getISTTodayStart, getISTTodayEnd, getISTNow, createISTDateTimeFromSchedule } from "../utils/istTime";
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -273,18 +273,17 @@ router.get("/sessions", authenticateToken, async (req, res) => {
       // Calculate end_time for each schedule item (scheduled_date + scheduled_time + 1 hour default)
       const now = getISTNow();
       const scheduleItemsWithEndTime = todayScheduleItems.map((item) => {
-        const scheduledDateTime = new Date(item.scheduled_date);
-        const [hours, minutes] = item.scheduled_time.split(':').map(Number);
-        scheduledDateTime.setHours(hours, minutes || 0, 0, 0);
+        // Create IST datetime from scheduled_date and scheduled_time
+        const scheduledDateTimeIST = createISTDateTimeFromSchedule(item.scheduled_date, item.scheduled_time);
         
         // Default duration: 1 hour
-        const endTime = new Date(scheduledDateTime.getTime() + 60 * 60 * 1000);
+        const endTimeIST = new Date(scheduledDateTimeIST.getTime() + 60 * 60 * 1000);
         
         return {
           ...item,
-          scheduledDateTime: scheduledDateTime.toISOString(),
-          endTime: endTime.toISOString(),
-          isCompleted: now >= endTime || item.status === "COMPLETED",
+          scheduledDateTime: scheduledDateTimeIST.toISOString(),
+          endTime: endTimeIST.toISOString(),
+          isCompleted: now >= endTimeIST || item.status === "COMPLETED",
         };
       });
 
