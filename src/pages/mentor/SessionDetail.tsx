@@ -913,13 +913,6 @@ export default function MentorSessionDetail() {
   const formatTimeFromString = (timeString: string | null) => {
     return formatISTTimeFromString(timeString);
   };
-      const ampm = hour >= 12 ? "PM" : "AM";
-      const hour12 = hour % 12 || 12;
-      return `${hour12}:${minutes.substring(0, 2)} ${ampm}`;
-    } catch {
-      return timeString;
-    }
-  };
 
   const getStudentInitials = (name: string) => {
     const nameParts = name?.split(" ") || [];

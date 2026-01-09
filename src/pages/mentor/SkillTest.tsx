@@ -1056,46 +1056,6 @@ export default function SkillTest() {
     </DashboardLayout>
   );
 }
-
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
-                    <Input
-                      ref={inputRef}
-                      type="text"
-                      placeholder="Search skills (e.g., Java, Python, Web Development...)"
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        setIsDropdownOpen(e.target.value.length > 0);
-                        // Clear selection if typing new text
-                        if (e.target.value && !availableCourses.some(c => c.name.toLowerCase() === e.target.value.toLowerCase())) {
-                          setSelectedCourseId(null);
-                        }
-                      }}
-                      onFocus={() => setIsDropdownOpen(searchQuery.length > 0 || eligibleCourses.length > 0)}
-                      className="pl-10 pr-10"
-                    />
-                    <ChevronDown
-                      className={cn(
-                        "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-transform cursor-pointer",
-                        isDropdownOpen && "rotate-180"
-                      )}
-                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    />
-                  </div>
-
-                  {/* Dropdown */}
-                  {isDropdownOpen && (
-                    <div
-                      ref={dropdownRef}
-                      className="absolute z-50 w-full mt-2 bg-background border border-border rounded-lg shadow-lg max-h-80 overflow-y-auto"
-                    >
-                      {eligibleCourses.length === 0 ? (
-                        <div className="p-4 text-center text-body-sm text-muted-foreground">
-                          {searchQuery ? "No matching skills found" : "No available skills"}
-                        </div>
-                      ) : (
-                        <div className="p-2">
-                          {eligibleCourses.map((course) => {
                             const isFailed = course.testStatus === "FAILED";
                             const isPending = course.testStatus === "PENDING" || course.testStatus === "IN_PROGRESS";
                             // Allow retest for PENDING, IN_PROGRESS, and FAILED (if retry date passed)

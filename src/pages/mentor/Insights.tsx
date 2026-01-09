@@ -1212,31 +1212,6 @@ export default function Insights() {
     </DashboardLayout>
   );
 }
-
-
-
-
-
-    const slotEndMinutes = slotEndHour * 60 + slotEndMin;
-
-    for (const session of daySessions) {
-      const [sessionStartHour, sessionStartMin] = session.start_time.split(':').map(Number);
-      const [sessionEndHour, sessionEndMin] = session.end_time.split(':').map(Number);
-      const sessionStartMinutes = sessionStartHour * 60 + sessionStartMin;
-      const sessionEndMinutes = sessionEndHour * 60 + sessionEndMin;
-
-      // Check if slot overlaps with session
-      if (slotStartMinutes < sessionEndMinutes && slotEndMinutes > sessionStartMinutes) {
-        return session;
-      }
-    }
-
-    return null;
-  };
-
-  const timeSlots = generateTimeSlots();
-
-  // Get current day for display
   const getCurrentDay = () => {
     const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
     const dayDate = new Date(currentWeekStart);
@@ -2052,7 +2027,3 @@ export default function Insights() {
     </DashboardLayout>
   );
 }
-
-
-
-

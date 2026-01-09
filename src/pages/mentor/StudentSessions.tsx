@@ -336,12 +336,6 @@ export default function StudentSessions() {
     </DashboardLayout>
   );
 }
-
-      </DashboardLayout>
-    );
-  }
-
-  return (
     <DashboardLayout role="mentor" title="Student Sessions">
       <div className="space-y-6">
         {/* Back Button */}
