@@ -269,4 +269,3 @@ export function NotificationBell() {
     </DropdownMenu>
   );
 }
-  const [notifications, setNotifications] = useState<Notification[]>([]);
