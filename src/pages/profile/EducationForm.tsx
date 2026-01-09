@@ -471,3 +471,143 @@ export default function EducationForm() {
   );
 }
 
+
+                <div className="space-y-2">
+                  <Label htmlFor="grade_or_year">
+                    Grade/Year <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="grade_or_year"
+                    name="grade_or_year"
+                    value={formData.grade_or_year}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="e.g., 3rd Year, Final Year"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="gpa">CGPA/GPA (Optional)</Label>
+                  <Input
+                    id="gpa"
+                    name="gpa"
+                    value={formData.gpa}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 8.5/10 or 3.8/4.0"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Social & Professional Links Section */}
+            <div className="space-y-4 pt-4 border-t border-border">
+              <h3 className="text-title text-foreground flex items-center gap-2">
+                <Globe className="h-5 w-5 text-primary" />
+                Social & Professional Links (Optional)
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="linkedin_url" className="flex items-center gap-2">
+                    <Linkedin className="h-4 w-4 text-primary" />
+                    LinkedIn Profile
+                  </Label>
+                  <Input
+                    id="linkedin_url"
+                    name="linkedin_url"
+                    type="url"
+                    value={formData.linkedin_url}
+                    onChange={handleInputChange}
+                    placeholder="https://linkedin.com/in/yourprofile"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="github_url" className="flex items-center gap-2">
+                    <Github className="h-4 w-4 text-primary" />
+                    GitHub Profile
+                  </Label>
+                  <Input
+                    id="github_url"
+                    name="github_url"
+                    type="url"
+                    value={formData.github_url}
+                    onChange={handleInputChange}
+                    placeholder="https://github.com/yourusername"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="portfolio_url" className="flex items-center gap-2">
+                    <Globe className="h-4 w-4 text-primary" />
+                    Portfolio Website
+                  </Label>
+                  <Input
+                    id="portfolio_url"
+                    name="portfolio_url"
+                    type="url"
+                    value={formData.portfolio_url}
+                    onChange={handleInputChange}
+                    placeholder="https://yourportfolio.com"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="twitter_url" className="flex items-center gap-2">
+                    <Twitter className="h-4 w-4 text-primary" />
+                    Twitter/X Profile
+                  </Label>
+                  <Input
+                    id="twitter_url"
+                    name="twitter_url"
+                    type="url"
+                    value={formData.twitter_url}
+                    onChange={handleInputChange}
+                    placeholder="https://twitter.com/yourusername"
+                  />
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="website_url" className="flex items-center gap-2">
+                    <Globe className="h-4 w-4 text-primary" />
+                    Personal Website
+                  </Label>
+                  <Input
+                    id="website_url"
+                    name="website_url"
+                    type="url"
+                    value={formData.website_url}
+                    onChange={handleInputChange}
+                    placeholder="https://yourwebsite.com"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-4">
+              <Button
+                type="submit"
+                variant="gradient"
+                className="w-full"
+                size="lg"
+                disabled={isSaving}
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Save & Continue
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+

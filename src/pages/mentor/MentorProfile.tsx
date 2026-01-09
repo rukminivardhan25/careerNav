@@ -846,3 +846,286 @@ export default function MentorProfile() {
     </DashboardLayout>
   );
 }
+
+            <div>
+              <Label htmlFor="degree">Degree *</Label>
+              {isEditing ? (
+                <Input
+                  id="degree"
+                  name="degree"
+                  value={formData.degree}
+                  onChange={handleInputChange}
+                  className="mt-2"
+                  placeholder="e.g., Master of Technology"
+                />
+              ) : (
+                <p className="text-body text-foreground mt-2">{formData.degree || "Not set"}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="branch">Branch / Specialization *</Label>
+              {isEditing ? (
+                <Input
+                  id="branch"
+                  name="branch"
+                  value={formData.branch}
+                  onChange={handleInputChange}
+                  className="mt-2"
+                  placeholder="e.g., Computer Science"
+                />
+              ) : (
+                <p className="text-body text-foreground mt-2">{formData.branch || "Not set"}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="college">College / University *</Label>
+              {isEditing ? (
+                <Input
+                  id="college"
+                  name="college"
+                  value={formData.college}
+                  onChange={handleInputChange}
+                  className="mt-2"
+                  placeholder="e.g., IIT Delhi"
+                />
+              ) : (
+                <p className="text-body text-foreground mt-2">{formData.college || "Not set"}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="graduationYear">Graduation Year *</Label>
+              {isEditing ? (
+                <Input
+                  id="graduationYear"
+                  name="graduationYear"
+                  value={formData.graduationYear}
+                  onChange={handleInputChange}
+                  className="mt-2"
+                  type="number"
+                  placeholder="e.g., 2015"
+                />
+              ) : (
+                <p className="text-body text-foreground mt-2">
+                  {formData.graduationYear || "Not set"}
+                </p>
+              )}
+            </div>
+
+            {formData.currentRole === "Student" && (
+              <div>
+                <Label htmlFor="currentYear">Current Year (if still studying)</Label>
+                {isEditing ? (
+                  <Input
+                    id="currentYear"
+                    name="currentYear"
+                    value={formData.currentYear}
+                    onChange={handleInputChange}
+                    className="mt-2"
+                    placeholder="e.g., 3rd Year"
+                  />
+                ) : (
+                  <p className="text-body text-foreground mt-2">
+                    {formData.currentYear || "N/A"}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Experience Details */}
+        <div className="glass-card rounded-xl p-6 space-y-6">
+          <div className="flex items-center gap-3 pb-4 border-b border-border">
+            <Briefcase className="h-6 w-6 text-primary" />
+            <div>
+              <h2 className="text-title text-foreground">Experience Details</h2>
+              <p className="text-body-sm text-muted-foreground">
+                Optional: Add your work experience, internships, or projects
+              </p>
+            </div>
+          </div>
+
+          {formData.experience.length === 0 ? (
+            <div className="text-center py-8">
+              <Briefcase className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+              <p className="text-body text-muted-foreground">
+                No experience added yet
+              </p>
+              {isEditing && (
+                <Button variant="outline" className="mt-4">
+                  Add Experience
+                </Button>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {formData.experience.map((exp) => (
+                <div
+                  key={exp.id}
+                  className="p-4 border border-border rounded-lg bg-muted/30"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h3 className="text-body font-semibold text-foreground">
+                        {exp.role}
+                      </h3>
+                      <p className="text-body-sm text-primary mt-1">{exp.company}</p>
+                      <p className="text-caption text-muted-foreground mt-1">
+                        {formatDateRange(exp.startDate, exp.endDate, exp.isCurrent)} • {exp.domain || "N/A"}
+                      </p>
+                    </div>
+                    {isEditing && (
+                      <Button variant="ghost" size="sm">
+                        Edit
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {isEditing && (
+                <Button variant="outline" className="w-full">
+                  + Add Another Experience
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Skills & Verified Courses */}
+        <div className="glass-card rounded-xl p-6 space-y-6">
+          <div className="flex items-center gap-3 pb-4 border-b border-border">
+            <Award className="h-6 w-6 text-primary" />
+            <div>
+              <h2 className="text-title text-foreground">Skills & Verified Courses</h2>
+              <p className="text-body-sm text-muted-foreground">
+                Courses verified through AI skill tests
+              </p>
+            </div>
+          </div>
+
+          {/* Verified Courses */}
+          {verifiedCourses.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-body font-semibold text-foreground">
+                Verified Mentorship Areas
+              </h3>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {verifiedCourses.map((course, index) => (
+                  <div
+                    key={course.skill || index}
+                    className="p-4 border border-success/20 bg-success/5 rounded-lg"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle className="h-5 w-5 text-success" />
+                      <span className="text-body font-medium text-foreground">
+                        {course.skill}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-caption text-muted-foreground">
+                      <span>Score: {Number(course.score).toFixed(0)}%</span>
+                      <span>
+                        Verified: {course.verifiedAt ? new Date(course.verifiedAt).toLocaleDateString() : "N/A"}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Pending Tests */}
+          {pendingTests.length > 0 && (
+            <div className="space-y-4 mt-6">
+              <h3 className="text-body font-semibold text-foreground">
+                Tests in Progress
+              </h3>
+              <div className="space-y-2">
+                {pendingTests.map((test) => (
+                  <div
+                    key={test.id}
+                    className="p-4 border border-warning/20 bg-warning/5 rounded-lg flex items-center justify-between"
+                  >
+                    <div>
+                      <span className="text-body font-medium text-foreground">
+                        {test.courseName}
+                      </span>
+                      <p className="text-caption text-muted-foreground mt-1">
+                        {test.status === "IN_PROGRESS" ? "Test in progress..." : "Test is being prepared..."}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="bg-warning/10 text-warning">
+                      {test.status === "IN_PROGRESS" ? "In Progress" : "Preparing"}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Failed Tests */}
+          {failedTests.length > 0 && (
+            <div className="space-y-4 mt-6">
+              <h3 className="text-body font-semibold text-foreground">
+                Tests Requiring Retry
+              </h3>
+              <div className="space-y-2">
+                {failedTests.map((test) => (
+                  <div
+                    key={test.id}
+                    className="p-4 border border-destructive/20 bg-destructive/5 rounded-lg"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-body font-medium text-foreground">
+                        {test.courseName}
+                      </span>
+                      <Badge variant="destructive">Score: {Number(test.score).toFixed(0)}%</Badge>
+                    </div>
+                    <p className="text-caption text-muted-foreground">
+                      Retry available after: {test.retryAvailableAfter ? new Date(test.retryAvailableAfter).toLocaleDateString() : "N/A"}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="pt-4 border-t border-border">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => window.location.href = "/mentor/skill-test"}
+            >
+              <Award className="h-4 w-4 mr-2" />
+              Take Skill Test for New Course
+            </Button>
+          </div>
+        </div>
+
+        {/* Save Button */}
+        {isEditing && (
+          <div className="flex justify-end gap-4">
+            <Button variant="outline" onClick={() => setIsEditing(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} disabled={isSaving}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Changes
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+      </div>
+    </DashboardLayout>
+  );
+}

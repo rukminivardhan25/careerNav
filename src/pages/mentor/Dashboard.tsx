@@ -28,6 +28,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { getCurrentUser, getAuthToken } from "@/lib/auth";
 import { toast } from "sonner";
 import { API_BASE_URL } from "@/lib/api";
+import { formatISTDateWithRelative, formatISTDate } from "@/utils/istTime";
 
 // ============================================
 // DATA NORMALIZATION UTILITIES (CRASH-PROOF)
@@ -464,25 +465,8 @@ export default function MentorDashboard() {
         date.getDate()
       );
 
-      if (sessionDate.getTime() === today.getTime()) {
-        return `Today, ${date.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-        })}`;
-      } else if (sessionDate.getTime() === today.getTime() + 86400000) {
-        return `Tomorrow, ${date.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-        })}`;
-      } else {
-        return date.toLocaleDateString("en-US", {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-          hour: "numeric",
-          minute: "2-digit",
-        });
-      }
+      // Use IST formatting
+      return formatISTDateWithRelative(dateString);
     } catch (e) {
       return "Date error";
     }
@@ -709,7 +693,7 @@ export default function MentorDashboard() {
                   let dateString = "Date not available";
                   try {
                     if (requestedAt) {
-                      dateString = new Date(requestedAt).toLocaleDateString();
+                      dateString = formatISTDate(requestedAt);
                     }
                   } catch (e) {
                     dateString = "Invalid date";

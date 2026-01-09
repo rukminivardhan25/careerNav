@@ -3,6 +3,7 @@
  * Business logic for mentor operations
  */
 import { PrismaClient, SessionStatus, TestStatus, PaymentStatus, ReviewStatus, ScheduleStatus } from "@prisma/client";
+import { getISTNow, getISTTodayStart, getISTTodayEnd } from "../utils/istTime";
 
 const prisma = new PrismaClient();
 
@@ -330,11 +331,9 @@ export class MentorService {
    */
   async getDashboardStats(mentorId: string): Promise<any> {
     try {
-      const now = new Date();
-      // Get today's date at midnight (start of day)
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      // Get tomorrow's date at midnight (end of today)
-      const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+      // Use IST time for business logic
+      const todayStart = getISTTodayStart();
+      const todayEnd = getISTTodayEnd();
 
       const [pendingRequests, scheduledSessions, verifiedCourses] =
         await Promise.all([
@@ -596,11 +595,10 @@ export class MentorService {
    */
   async getOngoingSessions(mentorId: string): Promise<any[]> {
     try {
-      const now = new Date();
-      // Get today's date at midnight (start of day) - IST-based calculation
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      // Get tomorrow's date at midnight (end of today)
-      const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+      const now = getISTNow(); // Use IST time
+      // Get today's date at midnight (start of day) in IST
+      const todayStart = getISTTodayStart();
+      const todayEnd = getISTTodayEnd();
 
       // Get all sessions for this mentor (excluding CANCELLED and REJECTED)
       // Do NOT filter by session.status - we use schedule items for daily grouping
@@ -723,8 +721,7 @@ export class MentorService {
         
         // Display today's date with the session's scheduled time
         // Shows correct scheduled time, not current time
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Start of today (midnight)
+        const today = getISTTodayStart(); // IST today start
         
         // Get the first schedule item's time (sessions can have multiple schedule items)
         const firstScheduleItem = session.todayScheduleItems?.[0];
@@ -740,7 +737,7 @@ export class MentorService {
         } else {
           // Fallback: if no schedule item found, use current time
           // This shouldn't happen in normal flow, but provides safety
-          scheduledAt = new Date().toISOString();
+          scheduledAt = getISTNow().toISOString();
         }
         
         return {
@@ -792,7 +789,7 @@ export class MentorService {
 
       if (upcomingOnly) {
         whereClause.scheduled_at = {
-          gte: new Date(),
+          gte: getISTNow(), // Use IST time for comparison
         };
       }
 
@@ -885,11 +882,10 @@ export class MentorService {
    */
   async getCompletedSessions(mentorId: string): Promise<any[]> {
     try {
-      const now = new Date();
-      // Get today's date at midnight (start of day) - IST-based calculation
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      // Get tomorrow's date at midnight (end of today)
-      const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+      const now = getISTNow(); // Use IST time
+      // Get today's date at midnight (start of day) in IST
+      const todayStart = getISTTodayStart();
+      const todayEnd = getISTTodayEnd();
 
       // Get all sessions for this mentor (excluding CANCELLED and REJECTED)
       // Do NOT filter by session.status - we use schedule items for daily grouping
@@ -1419,8 +1415,8 @@ export class MentorService {
       const coverLetterReviewItems = coverLetterReviews.map((review) => {
         const reviewStatus = review.status === ReviewStatus.VERIFIED ? "completed" : "pending";
         
-        const createdAt = new Date(review.created_at || new Date());
-        const now = new Date();
+        const createdAt = new Date(review.created_at || getISTNow());
+        const now = getISTNow();
         const diffMs = now.getTime() - createdAt.getTime();
         const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
         const diffDays = Math.floor(diffHours / 24);
@@ -1469,8 +1465,8 @@ export class MentorService {
       const resumeReviewItems = resumeReviews.map((review) => {
         const reviewStatus = review.status === ReviewStatus.VERIFIED ? "completed" : "pending";
         
-        const createdAt = new Date(review.created_at || new Date());
-        const now = new Date();
+        const createdAt = new Date(review.created_at || getISTNow());
+        const now = getISTNow();
         const diffMs = now.getTime() - createdAt.getTime();
         const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
         const diffDays = Math.floor(diffHours / 24);
@@ -1522,7 +1518,7 @@ export class MentorService {
         
         // Calculate time ago
         const submittedAt = new Date(submission.submitted_at);
-        const now = new Date();
+        const now = getISTNow();
         const diffMs = now.getTime() - submittedAt.getTime();
         const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
         const diffDays = Math.floor(diffHours / 24);
@@ -1912,8 +1908,8 @@ export class MentorService {
     timeRange?: string
   ): Promise<any> {
     try {
-      const now = new Date();
-      let startDate = new Date();
+      const now = getISTNow();
+      let startDate = getISTNow();
       let monthsBack = 6; // Default to 6 months
       
       // Calculate start date based on time range
@@ -2073,7 +2069,7 @@ export class MentorService {
     timeRange?: string
   ): Promise<any> {
     try {
-      const now = new Date();
+      const now = getISTNow();
       let monthsBack = 6; // Default to 6 months
       
       if (timeRange === "1month") {
@@ -3142,7 +3138,7 @@ export class MentorService {
 
       if (failedTest && failedTest.retry_available_after) {
         const retryDate = new Date(failedTest.retry_available_after);
-        if (retryDate > new Date()) {
+        if (retryDate > getISTNow()) {
           throw new Error(
             `Retry available after ${retryDate.toLocaleDateString()}`
           );
@@ -3489,8 +3485,8 @@ export class MentorService {
         status = TestStatus.CONDITIONAL;
       } else {
         status = TestStatus.FAILED;
-        // Set retry date (7 days from now)
-        const retryDate = new Date();
+        // Set retry date (7 days from now in IST)
+        const retryDate = getISTNow();
         retryDate.setDate(retryDate.getDate() + 7);
         await prisma.mentor_tests.update({
           where: { id: testIdNum },

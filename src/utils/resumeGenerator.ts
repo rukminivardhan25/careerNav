@@ -113,3 +113,7 @@ export function generateMarkdown(data: ResumeData): string {
 
 
 
+
+
+
+

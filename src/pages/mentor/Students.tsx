@@ -583,3 +583,26 @@ export default function Students() {
     </DashboardLayout>
   );
 }
+
+              <AlertDialogCancel disabled={cancelling}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmCancelSession}
+                disabled={cancelling}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {cancelling ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Cancelling...
+                  </>
+                ) : (
+                  "Confirm"
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </DashboardLayout>
+  );
+}

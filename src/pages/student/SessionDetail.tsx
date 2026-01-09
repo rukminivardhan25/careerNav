@@ -37,6 +37,7 @@ import { cn } from "@/lib/utils";
 import { getAuthToken } from "@/lib/auth";
 import { API_BASE_URL, BASE_URL } from "@/lib/api";
 import { getSocket } from "@/lib/socket";
+import { formatISTTime, formatISTDate, formatISTTimeFromString, formatISTDateTime } from "@/utils/istTime";
 
 interface SessionData {
   id: string;
@@ -743,17 +744,14 @@ export default function SessionDetail() {
   }, [sessionId, fetchAssignments]);
 
   const formatTime = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString("en-US", {
+    return formatISTTime(timestamp, {
       hour: "2-digit",
       minute: "2-digit",
     });
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+    return formatISTDate(dateString, {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -761,17 +759,7 @@ export default function SessionDetail() {
   };
 
   const formatTimeFromString = (timeString: string | null) => {
-    if (!timeString) return "N/A";
-    // Handle formats like "09:00:00" or "09:00 AM"
-    try {
-      const [hours, minutes] = timeString.split(":");
-      const hour = parseInt(hours);
-      const ampm = hour >= 12 ? "PM" : "AM";
-      const hour12 = hour % 12 || 12;
-      return `${hour12}:${minutes.substring(0, 2)} ${ampm}`;
-    } catch {
-      return timeString;
-    }
+    return formatISTTimeFromString(timeString);
   };
 
   const getMentorInitials = (name: string) => {
@@ -1392,13 +1380,13 @@ export default function SessionDetail() {
                                 <div className="flex items-center gap-1 text-body-sm text-muted-foreground">
                                   <Clock className="h-4 w-4" />
                                   {isSubmitted && submission.submittedAt
-                                    ? `Submitted: ${new Date(submission.submittedAt).toLocaleString()}`
+                                    ? `Submitted: ${formatISTDateTime(submission.submittedAt)}`
                                     : !isSubmitted
                                     ? getTimeRemaining(assignment.dueAt)
                                     : "Submitted"}
                                 </div>
                                 <div className="text-body-sm text-muted-foreground">
-                                  Due: {dueDate.toLocaleString()}
+                                  Due: {formatISTDateTime(assignment.dueAt)}
                                 </div>
                               </div>
                             </div>
@@ -1463,7 +1451,7 @@ export default function SessionDetail() {
                                     </p>
                                   </div>
                                   <p className="text-body-sm text-muted-foreground">
-                                    Submitted on: {submission.submittedAt ? new Date(submission.submittedAt).toLocaleString() : "N/A"}
+                                    Submitted on: {formatISTDateTime(submission.submittedAt)}
                                   </p>
                                   {isLate && (
                                     <p className="text-caption text-destructive mt-2">

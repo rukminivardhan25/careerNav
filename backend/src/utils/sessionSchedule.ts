@@ -3,6 +3,7 @@
  * Handles unlocking sessions based on scheduled date/time
  */
 import { PrismaClient, ScheduleStatus, SessionStatus } from "@prisma/client";
+import { getISTNow, getISTTodayStart } from "./istTime";
 
 const prisma = new PrismaClient();
 
@@ -35,10 +36,10 @@ export async function updateSessionScheduleStatus(sessionId: string): Promise<an
       return [];
     }
 
-    const now = new Date();
+    const now = getISTNow(); // Use IST time
 
-    // Get today's date at midnight (start of day) for comparison
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    // Get today's date at midnight (start of day) in IST for comparison
+    const todayStart = getISTTodayStart();
 
     // Update each schedule item
     for (const item of scheduleItems) {
@@ -151,7 +152,7 @@ export async function evaluateMentorshipSessionStatus(sessionId: string): Promis
           data: {
             status: SessionStatus.SCHEDULED,
             completed_at: null,
-            updated_at: new Date(),
+            updated_at: getISTNow(),
           },
         });
         return { status: SessionStatus.SCHEDULED, completedAt: null };
@@ -180,7 +181,7 @@ export async function evaluateMentorshipSessionStatus(sessionId: string): Promis
           data: {
             status: SessionStatus.COMPLETED,
             completed_at: new Date(),
-            updated_at: new Date(),
+            updated_at: getISTNow(),
           },
         });
         return { status: SessionStatus.COMPLETED, completedAt: new Date() };
@@ -194,7 +195,7 @@ export async function evaluateMentorshipSessionStatus(sessionId: string): Promis
           data: {
             status: SessionStatus.SCHEDULED,
             completed_at: null,
-            updated_at: new Date(),
+            updated_at: getISTNow(),
           },
         });
         return { status: SessionStatus.SCHEDULED, completedAt: null };
@@ -205,7 +206,7 @@ export async function evaluateMentorshipSessionStatus(sessionId: string): Promis
           where: { id: sessionId },
           data: {
             completed_at: null,
-            updated_at: new Date(),
+            updated_at: getISTNow(),
           },
         });
       }

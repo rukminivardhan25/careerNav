@@ -321,3 +321,30 @@ export default function StudentSignUp() {
   );
 }
 
+
+
+          <p className="text-center text-body-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link
+              to="/student/login"
+              className="text-primary hover:underline font-medium"
+            >
+              Sign in
+            </Link>
+          </p>
+
+          <p className="text-center text-body-sm text-muted-foreground">
+            Are you a mentor?{" "}
+            <Link
+              to="/mentor/signup"
+              className="text-primary hover:underline font-medium"
+            >
+              Sign up here
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+

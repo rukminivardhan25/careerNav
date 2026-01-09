@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { authenticateToken } from "../middlewares/auth.middleware";
 import { PrismaClient } from "@prisma/client";
 import { dashboardService } from "../services/dashboard.service";
+import { getISTNow, getISTTodayStart, getISTDateComponents } from "../utils/istTime";
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -37,22 +38,20 @@ router.get("/", authenticateToken, async (req: Request, res: Response) => {
       });
     }
 
-    // Get account creation date and normalize to local date (YYYY-MM-DD)
+    // Get account creation date and normalize to IST date (YYYY-MM-DD)
     // This ensures we don't count activities before the account was created
     const accountCreatedAt = new Date(user.createdAt);
-    const accountCreatedYear = accountCreatedAt.getFullYear();
-    const accountCreatedMonth = accountCreatedAt.getMonth();
-    const accountCreatedDay = accountCreatedAt.getDate();
-    const accountCreatedDateStr = `${accountCreatedYear}-${String(accountCreatedMonth + 1).padStart(2, "0")}-${String(accountCreatedDay).padStart(2, "0")}`;
+    const accountCreatedComponents = getISTDateComponents(accountCreatedAt);
+    const accountCreatedDateStr = `${accountCreatedComponents.year}-${String(accountCreatedComponents.month).padStart(2, "0")}-${String(accountCreatedComponents.day).padStart(2, "0")}`;
     
-    // Create a date object for account creation (midnight local time)
-    const accountCreatedDate = new Date(accountCreatedYear, accountCreatedMonth, accountCreatedDay);
+    // Create a date object for account creation (midnight IST)
+    const accountCreatedDate = getISTTodayStart(); // We'll use today's start as reference, but we need the actual account creation date
+    // For filtering, we can use the UTC date directly since we're comparing timestamps
 
     // Get activity dates for streak calendar (last 90 days)
-    // Normalize to local time (12:00 AM - 11:59 PM)
-    const ninetyDaysAgo = new Date();
-    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
-    ninetyDaysAgo.setHours(0, 0, 0, 0);
+    // Normalize to IST time (12:00 AM - 11:59 PM)
+    const todayStart = getISTTodayStart();
+    const ninetyDaysAgo = new Date(todayStart.getTime() - 90 * 24 * 60 * 60 * 1000);
 
     const activities = await prisma.user_activity.findMany({
       where: {
@@ -69,17 +68,15 @@ router.get("/", authenticateToken, async (req: Request, res: Response) => {
       },
     });
 
-    // Normalize dates to YYYY-MM-DD format (local time)
-    // Convert activity_date (Date object) to local date string
-    // Use local time methods consistently to match account creation date normalization
+    // Normalize dates to YYYY-MM-DD format (IST time)
+    // Convert activity_date (Date object) to IST date string
+    // Use IST time methods consistently
     const activityDates = new Set<string>();
     activities.forEach((a) => {
       const date = new Date(a.activity_date);
-      // Use local time methods to match how we normalized account creation date
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      const dateStr = `${year}-${month}-${day}`;
+      // Use IST time components
+      const components = getISTDateComponents(date);
+      const dateStr = `${components.year}-${String(components.month).padStart(2, "0")}-${String(components.day).padStart(2, "0")}`;
       
       // Only include dates that are on or after account creation date
       if (dateStr >= accountCreatedDateStr) {
@@ -88,12 +85,9 @@ router.get("/", authenticateToken, async (req: Request, res: Response) => {
     });
 
     // Calculate current streak (consecutive days from today backwards)
-    // A day = 12:00 AM - 11:59 PM (local time)
-    const today = new Date();
-    const todayYear = today.getFullYear();
-    const todayMonth = today.getMonth();
-    const todayDay = today.getDate();
-    const todayStr = `${todayYear}-${String(todayMonth + 1).padStart(2, "0")}-${String(todayDay).padStart(2, "0")}`;
+    // A day = 12:00 AM - 11:59 PM (IST time)
+    const todayComponents = getISTDateComponents(getISTNow());
+    const todayStr = `${todayComponents.year}-${String(todayComponents.month).padStart(2, "0")}-${String(todayComponents.day).padStart(2, "0")}`;
 
     // Calculate streak: count consecutive green days ending today
     // Don't count days before account creation

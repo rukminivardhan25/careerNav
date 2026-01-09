@@ -324,3 +324,19 @@ export default function MentorSignUp() {
   );
 }
 
+
+          <p className="text-center text-body-sm text-muted-foreground">
+            Are you a student?{" "}
+            <Link
+              to="/student/signup"
+              className="text-primary hover:underline font-medium"
+            >
+              Sign up here
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+

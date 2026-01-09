@@ -9,6 +9,7 @@ import { notificationService } from "../services/notification.service";
 import { uploadFile, getFileURL, uploadSessionResource } from "../utils/fileUpload";
 import { getIO } from "../config/socket";
 import { updateSessionScheduleStatus, evaluateMentorshipSessionStatus } from "../utils/sessionSchedule";
+import { getISTNow } from "../utils/istTime";
 import path from "path";
 
 const router = express.Router();
@@ -285,7 +286,7 @@ router.get("/:sessionId/messages", authenticateToken, async (req, res) => {
         messageType: msg.message_type || "text",
         fileData: fileData,
         zoomLink: zoomLink,
-        createdAt: msg.created_at?.toISOString() || new Date().toISOString(),
+        createdAt: msg.created_at?.toISOString() || getISTNow().toISOString(),
       };
     });
 

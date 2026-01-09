@@ -2,6 +2,7 @@ import express from "express";
 import { authenticateToken } from "../middlewares/auth.middleware";
 import { PrismaClient, SessionStatus, PaymentStatus, ScheduleStatus } from "@prisma/client";
 import { getOngoingCoursesFromSessions, type SessionWithRelations } from "../utils/courseHelpers";
+import { getISTTodayStart, getISTTodayEnd, getISTNow } from "../utils/istTime";
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -117,7 +118,7 @@ router.get("/dashboard/summary", authenticateToken, async (req, res) => {
         // End time: calculate from last item's scheduled_time + 1 hour
         if (lastItem.scheduled_time) {
           const [hours, minutes] = lastItem.scheduled_time.split(':').map(Number);
-          const endDateTime = new Date(lastItem.scheduled_date || new Date());
+          const endDateTime = new Date(lastItem.scheduled_date || getISTNow());
           endDateTime.setHours(hours || 0, minutes || 0, 0, 0);
           endDateTime.setTime(endDateTime.getTime() + 60 * 60 * 1000); // Add 1 hour
           const endHours = endDateTime.getHours();
@@ -191,11 +192,9 @@ router.get("/sessions", authenticateToken, async (req, res) => {
       });
     }
 
-    const now = new Date();
-    // Get today's date at midnight (start of day)
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    // Get tomorrow's date at midnight (end of today)
-    const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+    // Use IST time for business logic
+    const todayStart = getISTTodayStart();
+    const todayEnd = getISTTodayEnd();
 
     // Get all sessions for this student (excluding CANCELLED and REJECTED)
     const sessions = await prisma.sessions.findMany({

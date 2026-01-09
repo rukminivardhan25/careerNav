@@ -49,6 +49,7 @@ import { cn } from "@/lib/utils";
 import { getAuthToken } from "@/lib/auth";
 import { API_BASE_URL, BASE_URL } from "@/lib/api";
 import { getSocket } from "@/lib/socket";
+import { formatISTTime, formatISTDate, formatISTTimeFromString, formatISTDateTime } from "@/utils/istTime";
 
 interface SessionData {
   id: string;
@@ -895,17 +896,14 @@ export default function MentorSessionDetail() {
   }, [sessionId, fetchAssignments, selectedAssignment]);
 
   const formatTime = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString("en-US", {
+    return formatISTTime(timestamp, {
       hour: "2-digit",
       minute: "2-digit",
     });
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+    return formatISTDate(dateString, {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -913,10 +911,8 @@ export default function MentorSessionDetail() {
   };
 
   const formatTimeFromString = (timeString: string | null) => {
-    if (!timeString) return "N/A";
-    try {
-      const [hours, minutes] = timeString.split(":");
-      const hour = parseInt(hours);
+    return formatISTTimeFromString(timeString);
+  };
       const ampm = hour >= 12 ? "PM" : "AM";
       const hour12 = hour % 12 || 12;
       return `${hour12}:${minutes.substring(0, 2)} ${ampm}`;
@@ -1698,7 +1694,7 @@ export default function MentorSessionDetail() {
                                 <div className="flex items-center gap-4 mt-3">
                                   <div className="flex items-center gap-1 text-body-sm text-muted-foreground">
                                     <Clock className="h-4 w-4" />
-                                    Due: {new Date(assignment.dueAt).toLocaleString()}
+                                    Due: {formatISTDateTime(assignment.dueAt)}
                                   </div>
                                 </div>
                               </div>
@@ -1755,7 +1751,7 @@ export default function MentorSessionDetail() {
                                     {submission.student?.name || "Student"}
                                   </p>
                                   <p className="text-caption text-muted-foreground">
-                                    Submitted: {new Date(submission.submittedAt).toLocaleString()}
+                                    Submitted: {formatISTDateTime(submission.submittedAt)}
                                   </p>
                                 </div>
                                 <Badge
@@ -1824,7 +1820,7 @@ export default function MentorSessionDetail() {
                       <div className="flex-1 min-w-0">
                         <p className="text-body-sm font-medium text-foreground truncate">{resource.fileName}</p>
                         <p className="text-caption text-muted-foreground">
-                          Uploaded: {resource.uploadedAt ? new Date(resource.uploadedAt).toLocaleDateString() : "N/A"}
+                          Uploaded: {formatISTDate(resource.uploadedAt)}
                         </p>
                       </div>
                       <Button

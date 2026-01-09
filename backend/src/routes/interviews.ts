@@ -7,6 +7,7 @@ import { PrismaClient, SessionStatus } from "@prisma/client";
 import { authenticateToken, requireRole, AuthRequest } from "../middlewares/auth.middleware";
 import { ROLES } from "../config/constants";
 import { generateWithGroq } from "../utils/groq";
+import { getISTNow } from "../utils/istTime";
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -378,7 +379,7 @@ router.post(
 
       // Create session record for mock interview
       const sessionId = `mock_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      const now = new Date();
+      const now = getISTNow(); // Use IST time
       
       const session = await prisma.sessions.create({
         data: {
