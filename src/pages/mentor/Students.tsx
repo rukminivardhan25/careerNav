@@ -218,19 +218,31 @@ export default function Students() {
       .substring(0, 2);
   };
 
-  // Format date and time
+  // Format date and time - display stored time directly without timezone conversion
   const formatDateTime = (dateString: string | null | undefined): string => {
     if (!dateString) return "Date not available";
     try {
+      // Parse the date string and extract components directly
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return "Invalid date";
-      return date.toLocaleString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-      });
+      
+      // Get date components (UTC to avoid timezone shift)
+      const year = date.getUTCFullYear();
+      const month = date.getUTCMonth();
+      const day = date.getUTCDate();
+      const hours = date.getUTCHours();
+      const minutes = date.getUTCMinutes();
+      
+      // Format date
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const dateStr = `${monthNames[month]} ${day}, ${year}`;
+      
+      // Format time in 12-hour format
+      const period = hours >= 12 ? "PM" : "AM";
+      const displayHours = hours % 12 || 12;
+      const timeStr = `${displayHours}:${String(minutes).padStart(2, "0")} ${period}`;
+      
+      return `${dateStr}, ${timeStr}`;
     } catch (e) {
       return "Invalid date";
     }

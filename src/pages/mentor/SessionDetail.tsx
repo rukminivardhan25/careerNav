@@ -902,16 +902,48 @@ export default function MentorSessionDetail() {
     });
   };
 
+  // Format date - display stored date directly without timezone conversion
   const formatDate = (dateString: string | null) => {
-    return formatISTDate(dateString, {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+    if (!dateString) return "Date not available";
+    try {
+      // If it's a date string in YYYY-MM-DD format, parse it directly
+      if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const [year, month, day] = dateString.split("-").map(Number);
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        return `${monthNames[month - 1]} ${day}, ${year}`;
+      }
+      // If it's an ISO string, parse and extract date components directly
+      // Use the date as-is without timezone conversion
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "Invalid date";
+      
+      // Extract date components from the ISO string directly to avoid timezone shift
+      // If the string has timezone info, parse it; otherwise use UTC components
+      const year = date.getUTCFullYear();
+      const month = date.getUTCMonth();
+      const day = date.getUTCDate();
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      return `${monthNames[month]} ${day}, ${year}`;
+    } catch (e) {
+      return "Invalid date";
+    }
   };
 
+  // Format time from string - display stored time directly without timezone conversion
   const formatTimeFromString = (timeString: string | null) => {
-    return formatISTTimeFromString(timeString);
+    if (!timeString) return "Time not available";
+    try {
+      // Time string is typically in HH:MM or HH:MM:SS format
+      const [hours, minutes] = timeString.split(":").map(Number);
+      if (isNaN(hours) || isNaN(minutes)) return timeString;
+      
+      // Convert to 12-hour format
+      const period = hours >= 12 ? "PM" : "AM";
+      const displayHours = hours % 12 || 12;
+      return `${displayHours}:${String(minutes).padStart(2, "0")} ${period}`;
+    } catch (e) {
+      return timeString;
+    }
   };
 
   const getStudentInitials = (name: string) => {
