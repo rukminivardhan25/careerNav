@@ -33,17 +33,9 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          // Ensure React and React-DOM are always in the main bundle
-          // This prevents React from being null when hooks are called
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-            return undefined; // Keep in main bundle
-          }
-          // Allow other vendor code to be chunked separately
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
-        },
+        // Disable chunking entirely - keep everything in one bundle
+        // This ensures React is always available when hooks are called
+        manualChunks: undefined,
       },
     },
   },
