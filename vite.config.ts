@@ -32,11 +32,14 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // Don't split React - keep it with vendor to ensure it's always available
-          // This prevents "React is undefined" errors when vendor code uses React.forwardRef
+          // Keep React and React-DOM in the main bundle to ensure they're always available
+          // This prevents "React is null" errors when hooks are called
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            // Don't chunk React - keep it in the main bundle
+            return undefined;
+          }
+          // Separate vendor chunks for better caching
           if (id.includes('node_modules')) {
-            // Put React and React-DOM in vendor chunk to ensure they're available
-            // when other vendor code (like Radix UI) tries to use React.forwardRef
             return 'vendor';
           }
         },
