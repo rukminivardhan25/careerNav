@@ -1056,7 +1056,6 @@ export default function SkillTest() {
     </DashboardLayout>
   );
 }
-                            const isFailed = course.testStatus === "FAILED";
                             const isPending = course.testStatus === "PENDING" || course.testStatus === "IN_PROGRESS";
                             // Allow retest for PENDING, IN_PROGRESS, and FAILED (if retry date passed)
                             // PASSED tests are already filtered out by backend
