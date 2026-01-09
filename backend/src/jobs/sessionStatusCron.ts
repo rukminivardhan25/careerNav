@@ -7,7 +7,6 @@
 import { PrismaClient, SessionStatus, ScheduleStatus } from "@prisma/client";
 import { getSessionStatusTransition } from "../utils/sessionVisibility";
 import { notificationService } from "../services/notification.service";
-import { getISTNow, getISTTodayStart, getISTTodayEnd } from "../utils/istTime";
 
 const prisma = new PrismaClient();
 
@@ -22,7 +21,7 @@ const prisma = new PrismaClient();
  */
 export async function updateSessionStatusesByTime(): Promise<void> {
   try {
-    const now = getISTNow(); // Use IST time
+    const now = new Date(); // Use UTC time
     let updatedCount = 0;
 
     // Get all SCHEDULED sessions that need status updates
@@ -121,8 +120,8 @@ export async function autoCompleteExpiredSessions(): Promise<void> {
  */
 export async function updateSessionStatuses(): Promise<void> {
   try {
-    const now = getISTNow(); // Use IST time
-    const today = getISTTodayStart(); // IST today start
+    const now = new Date(); // Use UTC time
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // UTC today start
 
     // Get all sessions that might need status updates
     // Only check APPROVED and SCHEDULED sessions
@@ -132,8 +131,8 @@ export async function updateSessionStatuses(): Promise<void> {
           in: [SessionStatus.APPROVED, SessionStatus.SCHEDULED],
         },
         scheduled_at: {
-          gte: new Date(today.getTime() - 24 * 60 * 60 * 1000), // Yesterday in IST
-          lte: new Date(today.getTime() + 24 * 60 * 60 * 1000), // Tomorrow in IST
+          gte: new Date(today.getTime() - 24 * 60 * 60 * 1000), // Yesterday in UTC
+          lte: new Date(today.getTime() + 24 * 60 * 60 * 1000), // Tomorrow in UTC
         },
       },
       select: {
@@ -180,7 +179,7 @@ export async function updateSessionStatuses(): Promise<void> {
  */
 export async function checkSessionsStartingSoon(): Promise<void> {
   try {
-    const now = getISTNow(); // Use IST time
+    const now = new Date(); // Use UTC time
     const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
     const oneHourAndTenMinutesFromNow = new Date(now.getTime() + 70 * 60 * 1000); // 1 hour 10 min from now
 
@@ -254,7 +253,8 @@ export async function checkSessionsStartingSoon(): Promise<void> {
  */
 export async function clearYesterdayCompletedSessions(): Promise<void> {
   try {
-    const todayStart = getISTTodayStart(); // IST today start
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // UTC today start
     const yesterdayStart = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000);
     const yesterdayEnd = new Date(yesterdayStart.getTime() + 24 * 60 * 60 * 1000);
 
@@ -298,7 +298,7 @@ export async function clearYesterdayCompletedSessions(): Promise<void> {
  */
 export async function autoCompleteSessionScheduleItems(): Promise<void> {
   try {
-    const now = getISTNow(); // Use IST time
+    const now = new Date(); // Use UTC time
     let updatedCount = 0;
 
     // Get all UPCOMING session_schedule items (not LOCKED, not already COMPLETED)
@@ -357,27 +357,17 @@ export async function autoCompleteSessionScheduleItems(): Promise<void> {
 }
 
 /**
- * Check if it's midnight (12:00 AM IST) and run daily cleanup
- * IST is UTC+5:30
- * This should be called frequently (every minute) to catch midnight IST
+ * Check if it's midnight (12:00 AM UTC) and run daily cleanup
+ * This should be called frequently (every minute) to catch midnight UTC
  */
 export async function checkAndRunMidnightCleanup(): Promise<void> {
-  const now = getISTNow();
+  const now = new Date();
+  const hour = now.getUTCHours();
+  const minute = now.getUTCMinutes();
   
-  // Get IST time using Intl.DateTimeFormat
-  const istFormatter = new Intl.DateTimeFormat("en-US", {
-    timeZone: "Asia/Kolkata",
-    hour: "numeric",
-    minute: "numeric",
-    hour12: false,
-  });
-  
-  const istTimeString = istFormatter.format(now);
-  const [istHours, istMinutes] = istTimeString.split(":").map(Number);
-  
-  // Check if it's between 12:00 AM and 12:01 AM IST
-  if (istHours === 0 && istMinutes === 0) {
-    console.log(`[SessionStatusCron] Detected 12:00 AM IST. Running daily cleanup at ${now.toISOString()}`);
+  // Check if it's between 12:00 AM and 12:01 AM UTC
+  if (hour === 0 && minute === 0) {
+    console.log(`[SessionStatusCron] Detected 12:00 AM UTC. Running daily cleanup at ${now.toISOString()}`);
     await clearYesterdayCompletedSessions();
   }
 }
