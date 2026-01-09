@@ -374,16 +374,16 @@ export async function autoCompleteSessionScheduleItems(): Promise<void> {
 }
 
 /**
- * Check if it's midnight (12:00 AM IST) and run daily cleanup + unlock today's sessions
- * This should be called frequently (every minute) to catch midnight IST
+ * Check if it's 1:25 AM IST and run daily cleanup + unlock today's sessions
+ * This should be called frequently (every minute) to catch 1:25 AM IST
  */
 export async function checkAndRunMidnightCleanup(): Promise<void> {
   const now = getISTNow();
   const istComponents = getISTTimeComponents(now);
   
-  // Check if it's between 12:00 AM and 12:01 AM IST
-  if (istComponents.hour === 0 && istComponents.minute === 0) {
-    console.log(`[SessionStatusCron] Detected 12:00 AM IST. Running daily cleanup and unlocking today's sessions at ${now.toISOString()}`);
+  // Check if it's between 1:25 AM and 1:26 AM IST
+  if (istComponents.hour === 1 && istComponents.minute === 25) {
+    console.log(`[SessionStatusCron] Detected 1:25 AM IST. Running daily cleanup and unlocking today's sessions at ${now.toISOString()}`);
     
     // 1. Clear yesterday's completed sessions (for logging/history)
     await clearYesterdayCompletedSessions();
@@ -398,7 +398,7 @@ export async function checkAndRunMidnightCleanup(): Promise<void> {
  * - Auto-complete expired sessions: every 5 minutes
  * - Session reminders: every 10 minutes
  * - Update session statuses: every 5 minutes
- * - Midnight cleanup check: every minute
+ * - Daily cleanup and unlock check: every minute (runs at 1:25 AM IST)
  */
 export function startSessionStatusCron(): void {
   // Run immediately on startup
@@ -419,7 +419,7 @@ export function startSessionStatusCron(): void {
     checkSessionsStartingSoon();
   }, 10 * 60 * 1000); // 10 minutes
 
-  // Midnight cleanup check: every minute (to catch 12:00 AM)
+  // Daily cleanup check: every minute (to catch 1:25 AM IST)
   setInterval(() => {
     checkAndRunMidnightCleanup();
   }, 60 * 1000); // 1 minute
@@ -429,6 +429,6 @@ export function startSessionStatusCron(): void {
   console.log("  - Auto-complete session schedule items (when end time reached): every 5 minutes");
   console.log("  - Session reminders (1 hour before): every 10 minutes");
   console.log("  - Update session statuses: every 5 minutes");
-  console.log("  - Midnight cleanup check: every minute");
+  console.log("  - Daily cleanup and unlock check: every minute (runs at 1:25 AM IST)");
 }
 
