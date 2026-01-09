@@ -10,7 +10,7 @@
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:migrate:safe": "prisma migrate deploy || echo '⚠️ Migration failed or timed out - will retry at runtime via initializePrisma()'",
+    "prisma:migrate:safe": "node scripts/migrate-safe.js",
     "prisma:studio": "prisma studio",
     "clear-db": "tsx scripts/clear-database.ts",
     "clear-assessment-data": "tsx scripts/clear-assessment-data.ts"
