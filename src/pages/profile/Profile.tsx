@@ -889,37 +889,6 @@ export default function Profile() {
   );
 }
 
-                  <Save className="h-4 w-4" />
-                  Save Profile
-                </>
-              ) : (
-                "Edit Profile"
-              )}
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid lg:grid-cols-2 gap-6">
-          {/* Personal Information */}
-          <div className="glass-card rounded-xl p-6 space-y-6">
-            <h2 className="text-title text-foreground flex items-center gap-2">
-              <User className="h-5 w-5 text-primary" />
-              Personal Information
-            </h2>
-
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input
-                  id="fullName"
-                  name="full_name"
-                  value={formData.full_name || userInfo.name}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  placeholder="Enter your full name"
-                />
-              </div>
-
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
