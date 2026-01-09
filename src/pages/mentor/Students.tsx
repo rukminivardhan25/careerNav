@@ -219,25 +219,57 @@ export default function Students() {
   };
 
   // Format date and time - display stored time directly without timezone conversion
+  // Backend sends ISO string - parse it directly to extract date/time components
+  // Note: Backend only returns today's sessions for ongoing, so if date shows yesterday,
+  // it's actually today due to timezone bug in backend
   const formatDateTime = (dateString: string | null | undefined): string => {
     if (!dateString) return "Date not available";
     try {
-      // Parse the date string and extract components directly
+      // Parse ISO string directly to extract components (e.g., "2026-01-09T19:30:00.000Z")
+      const isoMatch = dateString.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
+      if (isoMatch) {
+        let [, year, month, day, hours, minutes] = isoMatch.map(Number);
+        
+        // Get today's date in IST to check if the parsed date is yesterday
+        // If it is, it's actually today due to backend timezone bug
+        const now = new Date();
+        const todayIST = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+        const todayYear = todayIST.getFullYear();
+        const todayMonth = todayIST.getMonth() + 1;
+        const todayDay = todayIST.getDate();
+        
+        // If parsed date is yesterday, it's actually today (backend bug)
+        const parsedDate = new Date(year, month - 1, day);
+        const yesterday = new Date(todayYear, todayMonth - 1, todayDay - 1);
+        if (parsedDate.getTime() === yesterday.getTime()) {
+          year = todayYear;
+          month = todayMonth;
+          day = todayDay;
+        }
+        
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const dateStr = `${monthNames[month - 1]} ${day}, ${year}`;
+        
+        // Format time in 12-hour format
+        const period = hours >= 12 ? "PM" : "AM";
+        const displayHours = hours % 12 || 12;
+        const timeStr = `${displayHours}:${String(minutes).padStart(2, "0")} ${period}`;
+        
+        return `${dateStr}, ${timeStr}`;
+      }
+      
+      // Fallback: parse as Date object
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return "Invalid date";
       
-      // Get date components (UTC to avoid timezone shift)
       const year = date.getUTCFullYear();
       const month = date.getUTCMonth();
       const day = date.getUTCDate();
       const hours = date.getUTCHours();
       const minutes = date.getUTCMinutes();
       
-      // Format date
       const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       const dateStr = `${monthNames[month]} ${day}, ${year}`;
-      
-      // Format time in 12-hour format
       const period = hours >= 12 ? "PM" : "AM";
       const displayHours = hours % 12 || 12;
       const timeStr = `${displayHours}:${String(minutes).padStart(2, "0")} ${period}`;
