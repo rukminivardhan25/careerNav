@@ -330,11 +330,12 @@ export default function Students() {
                         </p>
                       </div>
                 ) : (
-                <div className="space-y-4">
+                <div className="overflow-x-auto -mx-4 px-4">
+                  <div className="flex gap-4 min-w-max pb-4">
                   {filteredPaymentPending.map((session) => (
                     <div
                       key={session.id}
-                      className="glass-card rounded-xl p-6 hover:shadow-card-hover transition-all duration-300 border-l-4 border-warning"
+                      className="glass-card rounded-xl p-6 hover:shadow-card-hover transition-all duration-300 border-l-4 border-warning min-w-[600px]"
                     >
                       <div className="flex items-center gap-6">
                         {/* Left: Student Info */}
@@ -391,6 +392,7 @@ export default function Students() {
                       </div>
                     </div>
                   ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -411,11 +413,12 @@ export default function Students() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="overflow-x-auto -mx-4 px-4">
+                  <div className="flex gap-4 min-w-max pb-4">
                   {filteredOngoing.map((session) => (
                     <div
                       key={session.id}
-                      className="glass-card rounded-xl p-6 hover:shadow-card-hover transition-all duration-300 border-l-4 border-primary"
+                      className="glass-card rounded-xl p-6 hover:shadow-card-hover transition-all duration-300 border-l-4 border-primary min-w-[600px]"
                     >
                       <div className="flex items-center gap-6">
                         {/* Left: Student Info */}
@@ -467,6 +470,7 @@ export default function Students() {
           </div>
                     </div>
                   ))}
+                  </div>
                 </div>
               )}
         </div>
@@ -487,11 +491,12 @@ export default function Students() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="overflow-x-auto -mx-4 px-4">
+                  <div className="flex gap-4 min-w-max pb-4">
                   {filteredCompleted.map((session) => (
                     <div
                       key={session.id}
-                      className="glass-card rounded-xl p-6 hover:shadow-card-hover transition-all duration-300 border-l-4 border-success/50"
+                      className="glass-card rounded-xl p-6 hover:shadow-card-hover transition-all duration-300 border-l-4 border-success/50 min-w-[600px]"
                     >
                       <div className="flex items-center gap-6">
                         {/* Left: Student Info */}
@@ -543,7 +548,8 @@ export default function Students() {
             </div>
           </div>
                   ))}
-              </div>
+                  </div>
+                </div>
               )}
             </div>
           </div>
