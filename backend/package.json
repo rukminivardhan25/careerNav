@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
+    "build:render": "npm run prisma:generate && npm run prisma:migrate:safe && npm run build",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
+    "prisma:migrate:safe": "prisma migrate deploy || echo '⚠️ Migration failed or timed out - will retry at runtime via initializePrisma()'",
     "prisma:studio": "prisma studio",
     "clear-db": "tsx scripts/clear-database.ts",
     "clear-assessment-data": "tsx scripts/clear-assessment-data.ts"
